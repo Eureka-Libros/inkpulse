@@ -127,7 +127,11 @@
                   $req_pedido->execute();
                   $pedido = $req_pedido->fetch();
 
-                  $sql_pedido="SELECT pe.fecha,pe.tipo as petipo,pe.observaciones, pe.cliente,z.codigo as codzona, z.zona, c.id as cid, c.colegio, c.sub_zona, c.responsable, u.nombres, u.apellidos, u.tipo, e.id as eid,e.estado FROM devoluciones_v pe JOIN colegios c ON pe.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.cod_zona=z.codigo JOIN estados_dev e ON e.id=pe.estado WHERE pe.id='".$pedido["id"]."' AND id_colegio > 0";
+
+
+                  $sql_pedido="SELECT pe.fecha,pe.tipo as petipo,pe.observaciones, pe.cliente,z.codigo as codzona, z.zona, c.id as cid, c.colegio, c.sub_zona, c.responsable, u.nombres, u.apellidos, u.tipo, e.id as eid,e.estado FROM devoluciones_v pe JOIN colegios c ON pe.id_colegio=c.id JOIN presupuestos pr ON pr.id_colegio=pe.id_colegio JOIN zonas z ON z.codigo=pr.cod_zona JOIN usuarios u ON u.cod_zona=pr.cod_zona JOIN estados_dev e ON e.id=pe.estado WHERE pe.id='".$pedido["id"]."'AND pe.id_colegio > 0";
+
+                  
 
                   $req_pedido = $bdd->prepare($sql_pedido);
                   $req_pedido->execute();
