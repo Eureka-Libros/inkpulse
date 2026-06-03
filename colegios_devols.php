@@ -108,7 +108,7 @@
                     $sql = "SELECT c.id, c.dane, c.colegio, c.direccion, c.barrio,c.telefono FROM colegios c JOIN presupuestos p ON c.id=p.id_colegio WHERE p.id_usuario='".$_SESSION["id"]."' AND p.definido='1' AND p.id_periodo='".$gp_periodo["id"]."' GROUP BY c.id";
                   }else{
 
-                    $sql = "SELECT c.id, c.dane, c.colegio, c.direccion, c.barrio,c.telefono FROM colegios c JOIN presupuestos p ON c.id=p.id_colegio WHERE (c.cod_zona='".$_SESSION["zona"]."' OR c.zona_madre='".$_SESSION["zona"]."') AND p.definido='1' AND p.id_periodo='".$gp_periodo["id"]."' GROUP BY c.id";
+                    $sql = "SELECT c.id, c.dane, c.colegio, c.direccion, c.barrio,c.telefono FROM colegios c JOIN presupuestos p ON c.id=p.id_colegio WHERE (p.cod_zona='".$_SESSION["zona"]."' OR c.zona_madre='".$_SESSION["zona"]."') AND p.definido='1' AND p.id_periodo='".$gp_periodo["id"]."' GROUP BY c.id";
 
                   }
 

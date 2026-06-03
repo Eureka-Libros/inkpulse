@@ -79,7 +79,7 @@
       }
 
       .dc {
-        width: 40px !important;
+        width: 55px !important;
       }
 
       input[type=number] { -moz-appearance:textfield; }
