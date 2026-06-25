@@ -129,7 +129,7 @@ $objSpreadsheet->getActiveSheet()->getStyle('A6:O6')->applyFromArray([
     ]
 ]);
 
-if ($_SESSION['tipo']==1 || $_SESSION['tipo']==2 || $_SESSION['tipo']==7) {
+if ($_SESSION['tipo']==1 || $_SESSION['tipo']==2 || $_SESSION['tipo']==7 || $_SESSION['tipo']==9) {
 
 
 

@@ -77,7 +77,7 @@
             
             <form action="php/valoriza_excel.php" method="POST">
               <div class="row">
-                <?php if ($_SESSION['tipo']==1 || $_SESSION['tipo']==2 || $_SESSION['tipo']==7) { ?>
+                <?php if ($_SESSION['tipo']==1 || $_SESSION['tipo']==2 || $_SESSION['tipo']==7 || $_SESSION['tipo']==9) { ?>
                 <div class="col-sm-6">
                   
                   <div class="form-group">

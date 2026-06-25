@@ -130,7 +130,7 @@
                     $sql = "SELECT p.id,  u.nombres, u.apellidos, p.fecha, e.estado,c.cliente, i.colegio FROM devoluciones_v p JOIN usuarios u ON u.id=p.id_usuario JOIN estados_dev e ON e.id=p.estado JOIN clientes c ON c.id=p.cliente LEFT JOIN colegios i ON i.id=p.id_colegio WHERE p.id_usuario='".$_SESSION["id"]."'";
                     
                   }else{
-                    $sql = "SELECT p.id,  u.nombres, u.apellidos, p.fecha, e.estado,c.cliente, i.colegio FROM devoluciones_v p JOIN usuarios u ON u.id=p.id_usuario JOIN estados_dev e ON e.id=p.estado JOIN clientes c ON c.id=p.cliente LEFT JOIN colegios i ON i.id=p.id_colegio LEFT JOIN presupuestos pr ON i.id=pr.id_colegio WHERE pr.cod_zona='".$_SESSION['zona']."' OR i.zona_madre='".$_SESSION['zona']."' GROUP BY pr.id_colegio";
+                    $sql = "SELECT p.id,  u.nombres, u.apellidos, p.fecha, e.estado,c.cliente, i.colegio FROM devoluciones_v p JOIN usuarios u ON u.id=p.id_usuario JOIN estados_dev e ON e.id=p.estado JOIN clientes c ON c.id=p.cliente LEFT JOIN colegios i ON i.id=p.id_colegio LEFT JOIN presupuestos pr ON i.id=pr.id_colegio WHERE pr.cod_zona='".$_SESSION['zona']."' OR i.zona_madre='".$_SESSION['zona']."' GROUP BY pr.id_colegio, p.id";
                   }
                   $req = $bdd->prepare($sql);
                   $req->execute();

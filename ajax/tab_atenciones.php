@@ -299,7 +299,7 @@
                             </thead>
                             <tbody>
                             <?php
-                              $sql = "SELECT e.estado, s.id,s.fecha, CONCAT(t.nombre, ' ', t.apellido) as solicitante, c.cargo, s.fecha_entrega, s.conse FROM solicitudes_recursos s JOIN estados_pedidos e ON e.id=s.estado LEFT JOIN trabajadores_colegios t ON s.solicitante=t.id LEFT JOIN cargos c ON c.id=t.cargo WHERE s.id_colegio='".$_GET['colegio']."' AND s.id_periodo='".$_GET['periodo']."' ORDER BY s.id DESC";
+                              $sql = "SELECT e.estado, s.id,s.fecha, s.conse, CONCAT(t.nombre, ' ', t.apellido) as solicitante, c.cargo, s.fecha_entrega, s.conse FROM solicitudes_recursos s JOIN estados_pedidos e ON e.id=s.estado LEFT JOIN trabajadores_colegios t ON s.solicitante=t.id LEFT JOIN cargos c ON c.id=t.cargo WHERE s.id_colegio='".$_GET['colegio']."' AND s.id_periodo='".$_GET['periodo']."' ORDER BY s.id DESC";
 
                               $req = $bdd->prepare($sql);
                               $req->execute();
@@ -314,7 +314,7 @@
                                 $total = $req->fetch();
 
                                 echo "<tr>";
-                                  echo "<td><a href='vista_solicitud.php?id=".$solicitud["id"]."' class='vista_soli'>".$solicitud["id"]."</a></td>";
+                                  echo "<td><a href='vista_solicitud.php?id=".$solicitud["id"]."' class='vista_soli'>".$solicitud["conse"]."</a></td>";
                                   echo "<td>".$solicitud["fecha"]."</td>";
                                   echo "<td>".$solicitud["solicitante"]." (".$solicitud["cargo"].")</td>";
                                   echo "<td>".$solicitud["fecha_entrega"]."</td>";
