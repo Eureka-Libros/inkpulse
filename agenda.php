@@ -122,7 +122,20 @@
 											  <input type="checkbox" class="c_casa" name="casa" id="casa" value="<?php echo $casa['id'] ?>">
 											</div>
 								  		</div><br>
-								  		
+
+								  		<div class="form-group">
+											<label for="otro_chk" class="col-sm-4 control-label c_otro">Otro lugar:</label>
+											<div class="col-sm-8">
+											  <input type="checkbox" class="c_otro" name="otro_chk" id="otro_chk" value="1">
+											</div>
+								  		</div><br>
+								  		<div class="form-group d-none" id="otro_lugar_wrap">
+								  		  <label for="otro_lugar_txt" class="col-sm-4 control-label">¿Cuál? <small style="color:red;">*</small></label>
+								  		  <div class="col-sm-8">
+								  		    <input type="text" name="otro_lugar_txt" id="otro_lugar_txt" class="form-control" placeholder="Especifique el lugar">
+								  		  </div>
+								  		</div><br>
+
 								  		<div class="form-group ocultar_oficina">
 											<label for="cole" class="col-sm-4 control-label">Colegio<small style="color:red;"> *</small></label>
 											<div class="col-sm-8">
@@ -171,8 +184,8 @@
 								  		<label for="parti" class="col-sm-4 control-label">Otros participantes</label>
 								  		<div class="col-sm-8">
 										  	<select name="participantes[]" id="parti" class="form-control custom-select2"  multiple="multiple" style="width: 300px;">
-										  		
-										  		<?php 
+
+										  		<?php
 											 		$sql = "SELECT id, CONCAT(nombres, ' ', apellidos) as parti FROM usuarios WHERE id !=1 AND act=1 AND (tipo=3 ||tipo=6 || tipo=4 || tipo=1)";
 
 													$req = $bdd->prepare($sql);
@@ -180,12 +193,15 @@
 													$participantes = $req->fetchAll();
 
 													foreach($participantes as $participante) {
-													   
+
 													    echo '<option value="'.$participante["id"].'">'.$participante["parti"].'</option>';
 													}
 											 	?>
+											 	<option value="otro">Otro</option>
 
 										  	</select>
+										  	<input type="text" name="otro_participante" id="otro_participante_txt"
+										  	       class="form-control mt-1 d-none" placeholder="Nombre del participante externo">
 									  	</div>
 									</div><br>
 									
@@ -204,38 +220,32 @@
 									</div>
 									<?php } ?>
 								  </div><br>
-									
-									
 
 								  <div class="form-group ocultar_oficina">
 									<label for="objetivo" class="col-sm-4 control-label">Objetivo<small style="color:red;"> *</small></label>
 									<div class="col-sm-8">
-									 <select name="objetivo" id="objetivo" class="form-control" required>
+									 <select name="objetivo" id="objetivo" class="form-control custom-select2" style="width:300px;" required>
 									 	<option value="">Seleccionar</option>
-									 	<?php 
-
+									 	<?php
 									 		if ($_SESSION["tipo"] < 4) {
-									 			$sql = "SELECT id, objetivo FROM objetivos WHERE tipo < 3 ORDER BY objetivo";
+									 			$sql = "SELECT id, objetivo FROM objetivos WHERE tipo < 3 AND objetivo != 'Otro' ORDER BY objetivo";
 									 		}else{
-									 			$sql = "SELECT id, objetivo FROM objetivos WHERE tipo > 1 ORDER BY objetivo";
+									 			$sql = "SELECT id, objetivo FROM objetivos WHERE tipo > 1 AND objetivo != 'Otro' ORDER BY objetivo";
 									 		}
-
-
-											$req = $bdd->prepare($sql);
-											$req->execute();
-											$objetivos = $req->fetchAll();
-
-											foreach($objetivos as $objetivo) {
-											    $id = $objetivo['id'];
-											    $nom = $objetivo['objetivo'];
-											    echo '<option value="'.$id.'">'.$nom.'</option>';
-											}
+									 		$req = $bdd->prepare($sql);
+									 		$req->execute();
+									 		$objetivos = $req->fetchAll();
+									 		foreach($objetivos as $objetivo) {
+									 		    echo '<option value="'.$objetivo['id'].'">'.$objetivo['objetivo'].'</option>';
+									 		}
 									 	?>
+									 	<option value="otro">Otro</option>
 									 </select>
+									 <input type="text" name="otro_objetivo_txt" id="otro_objetivo_txt"
+									        class="form-control mt-1 d-none" placeholder="Especifique el objetivo">
 									</div>
 								  </div><br>
 
-							
 								  <div class="form-group">
 									<label for="start" class="col-sm-4 control-label">Inicio</label>
 									<div class="col-sm-8">
@@ -279,9 +289,9 @@
 							  <div class="modal-body">
 								
 								  <div class="form-group">
-									<label for="title" class="col-sm-4 control-label">Titulo</label>
+									<label for="title" class="col-sm-4 control-label">Título</label>
 									<div class="col-sm-8">
-									  <input type="text" name="title" class="form-control" id="title" placeholder="Titulo">
+									  <input type="text" name="title" class="form-control" id="title" placeholder="Título">
 									</div>
 								  </div>
 								  <div class="form-group">
@@ -451,75 +461,80 @@
 		
 			});
 
-			$('#objetivo').on('change',function(){
-        		var valor = $(this).val();
-		        if (valor == 2) {
-
-		          	$("#muestreo").removeClass("d-none");
-		          	$("#materia").attr("required","required");
-		          	$("#grado").attr("required","required");
-		          	$("#libro").attr("required","required");
-
-        		}else{
-
-		          	$("#muestreo").addClass("d-none");
-
-		          	$("#materia").removeAttr("required");
-		          	$("#grado").removeAttr("required");
-		          	$("#libro").removeAttr("required");
-        		}
-            
-                
-    		});
 
     		$("#oficina").click(function(){
 
 				if( $('#oficina').prop('checked') ) {
 			   		$(".ocultar_oficina").addClass("d-none")
 			   		$(".c_casa").addClass("d-none");
+			   		$(".c_otro").addClass("d-none");
 			   		$(".ocultar_oficina").removeClass("d-block")
 			   		$("#cole").removeAttr("required");
 			   		$("#profesor").removeAttr("required");
 			   		$("#objetivo").removeAttr("required");
-
-			   		//$("#guardar").removeAttr("disabled");
+			   		$("#otro_lugar_wrap").addClass("d-none");
+			   		$("#otro_lugar_txt").removeAttr("required").val('');
+			   		$("#otro_chk").prop("checked", false);
 
 				}else {
 					$(".ocultar_oficina").addClass("d-block")
 					$(".ocultar_oficina").removeClass("d-none")
 					$(".c_casa").removeClass("d-none");
+					$(".c_otro").removeClass("d-none");
 					$("#cole").attr("required","required");
 					$("#profesor").attr("required","required");
 			   		$("#objetivo").attr("required","required");
-
-			   		//$("#guardar").attr("disabled","disabled")
 				}
 
 			})
 
 			$("#casa").click(function(){
 
-
 				if( $('#casa').prop('checked') ) {
 			   		$(".ocultar_oficina").addClass("d-none")
 			   		$(".c_ofi").addClass("d-none");
+			   		$(".c_otro").addClass("d-none");
 			   		$(".ocultar_oficina").removeClass("d-block")
 			   		$("#cole").removeAttr("required");
 			   		$("#profesor").removeAttr("required");
 			   		$("#objetivo").removeAttr("required");
-
-			   		//$("#guardar").removeAttr("disabled");
+			   		$("#otro_lugar_wrap").addClass("d-none");
+			   		$("#otro_lugar_txt").removeAttr("required").val('');
+			   		$("#otro_chk").prop("checked", false);
 
 				}else {
 					$(".ocultar_oficina").addClass("d-block")
 					$(".ocultar_oficina").removeClass("d-none")
 					$(".c_ofi").removeClass("d-none");
+					$(".c_otro").removeClass("d-none");
 					$("#cole").attr("required","required");
 					$("#profesor").attr("required","required");
 			   		$("#objetivo").attr("required","required");
+				}
 
-			   		//$("#guardar").attr("disabled","disabled")
+			})
 
+			$("#otro_chk").click(function(){
+
+				if ($('#otro_chk').prop('checked')) {
+					$(".ocultar_oficina").addClass("d-none").removeClass("d-block");
+					$(".c_ofi").addClass("d-none");
+					$(".c_casa").addClass("d-none");
+					$("#cole").removeAttr("required");
+					$("#profesor").removeAttr("required");
+					$("#objetivo").removeAttr("required");
+					$("#otro_lugar_wrap").removeClass("d-none");
+					$("#otro_lugar_txt").attr("required", "required");
+					$("#oficina").prop("checked", false);
+					$("#casa").prop("checked", false);
+				} else {
+					$(".ocultar_oficina").addClass("d-block").removeClass("d-none");
+					$(".c_ofi").removeClass("d-none");
+					$(".c_casa").removeClass("d-none");
+					$("#cole").attr("required", "required");
+					$("#objetivo").attr("required", "required");
+					$("#otro_lugar_wrap").addClass("d-none");
+					$("#otro_lugar_txt").removeAttr("required").val('');
 				}
 
 			})
@@ -527,6 +542,37 @@
 			$(document).ready(function() {
 				$(".custom-select2").select2({
 					 dropdownParent: $('#ModalAdd')
+				});
+
+				$('#parti').on('change', function() {
+					var vals = $(this).val() || [];
+					if (vals.indexOf('otro') !== -1) {
+						$('#otro_participante_txt').removeClass('d-none').attr('required', 'required');
+					} else {
+						$('#otro_participante_txt').addClass('d-none').removeAttr('required').val('');
+					}
+				});
+
+				function manejarObjetivo(valor) {
+					if (valor == 2) {
+						$("#muestreo").removeClass("d-none");
+						$("#materia").attr("required","required");
+						$("#grado").attr("required","required");
+						$("#libro").attr("required","required");
+					} else {
+						$("#muestreo").addClass("d-none");
+						$("#materia").removeAttr("required");
+						$("#grado").removeAttr("required");
+						$("#libro").removeAttr("required");
+					}
+					if (valor === 'otro') {
+						$('#otro_objetivo_txt').removeClass('d-none').attr('required', 'required');
+					} else {
+						$('#otro_objetivo_txt').addClass('d-none').removeAttr('required').val('');
+					}
+				}
+				$('#objetivo').on('change select2:select', function() {
+					manejarObjetivo($(this).val());
 				});
 			});
 

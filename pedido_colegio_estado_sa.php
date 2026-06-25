@@ -62,18 +62,24 @@
       
       }
       @media print {
-        a {display: none;}
-        
-        a[href]:after {
-            content: none !important;
-        }
-        body{
-          font-size: 9px;
-        }
+        a { display: none; }
+        a[href]:after { content: none !important; }
+        body { font-size: 9px; }
+        .table-responsive { overflow: visible !important; width: 100% !important; }
+        .main-container, .pd-ltr-20 { overflow: visible !important; }
+        table { page-break-inside: auto; }
+        tr    { page-break-inside: avoid; }
       }
       .dataTables_info{
         display: none;
       }
+      .mc-btn {
+        display:inline-flex; align-items:center; gap:7px;
+        padding:9px 22px; border-radius:8px; font-size:14px; font-weight:600;
+        border:none; cursor:pointer; transition:opacity .15s, transform .1s;
+      }
+      .mc-btn:hover { opacity:.88; transform:translateY(-1px); }
+      .mc-btn-teal  { background:#0d9488; color:#fff !important; }
     </style>
   </head>
   <body>
@@ -91,10 +97,10 @@
                 <nav aria-label="breadcrumb" role="navigation">
                   <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                      Pedidos sin adopción
+                      Pedidos
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
-                    Ver
+                    Detalle
                     </li>
                   </ol>
                 </nav>
@@ -166,11 +172,11 @@
                       <th>Materia</th>
                       <th>Grado</th>
                       <th>PVP</th>
-                      <th>Desc.</th>
-                      <th>Precio Fact.</th>
-                      <th>Cant.</th>
-                      <th>Desc. Aprobado</th>
-                      <th>Cant. Aprobada</th>
+                      <th>Descuento</th>
+                      <th>Precio Facturación</th>
+                      <th>Cantidad</th>
+                      <th>Descuento Aprobado</th>
+                      <th>Cantidad Aprobada</th>
                       <th>Valor Venta</th>
                     </tr>
                   </thead>
@@ -205,15 +211,15 @@
                           echo'<td class="center">'.$i.'</td>';
                           echo'<td class="">'.$libro["libro"].'</td>';
                           echo'<td class="center">'.$libro["materia"].'</td>';
-                          if ($libro["cod_area"] == "") {
+                          if (empty($libro["cod_area"])) {
 
                             $sql_g = "SELECT grado FROM grados WHERE id='".$libro["id_grado"]."'";
                             $req_g = $bdd->prepare($sql_g);
                             $req_g->execute();
                             $grado= $req_g->fetch();
-                                                  
+
                           }else{
-                                                  
+
                             $sql = "SELECT id_grado_otro FROM areas_objetivas WHERE codigo='".$libro["cod_area"]."'";
                             $req = $bdd->prepare($sql);
                             $req->execute();
@@ -270,7 +276,7 @@
                  <label for="observaciones">Observaciones:</label><br>
                  <textarea name="observaciones" id="observaciones" cols="40" rows="3" disabled><?php echo $pedido["observaciones"]; ?></textarea><br><br>
                  <h3><?php echo $pedido["estado"]; ?></h3><br>
-                 <button type="button" id="imprimir" class="btn btn-info hidden-print">Imprimir</button>
+                 <button type="button" id="imprimir" class="mc-btn mc-btn-teal hidden-print"><i class="bi bi-printer"></i> Imprimir</button>
               </center>
             </form>
 

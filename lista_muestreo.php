@@ -1,253 +1,394 @@
-<?php require_once("php/aut.php"); ?>
+<?php
+require_once("php/aut.php");
+require_once("conexion/bdd.php");
+
+$tp = intval($_GET['tp'] ?? 2);
+
+$status_cfg = [
+  1 => ['label'=>'Solicitudes', 'badge'=>'lm-badge-purple', 'icon'=>'bi-clipboard-check'],
+  2 => ['label'=>'Pendientes',  'badge'=>'lm-badge-yellow', 'icon'=>'bi-hourglass-split'],
+  3 => ['label'=>'Aprobados',   'badge'=>'lm-badge-green',  'icon'=>'bi-check-circle-fill'],
+  4 => ['label'=>'Despachados', 'badge'=>'lm-badge-blue',   'icon'=>'bi-truck'],
+  5 => ['label'=>'Anulados',    'badge'=>'lm-badge-red',    'icon'=>'bi-x-circle-fill'],
+];
+$st = $status_cfg[$tp] ?? $status_cfg[2];
+
+// Paleta de color por estado: header, filas pares, hover, acento para botón y borde
+$st_accent = [
+  1 => ['hdr'=>'#5b21b6', 'even'=>'#faf5ff', 'hover'=>'#ede9fe', 'accent'=>'#6d28d9'],
+  2 => ['hdr'=>'#92400e', 'even'=>'#fffbeb', 'hover'=>'#fef3c7', 'accent'=>'#b45309'],
+  3 => ['hdr'=>'#166534', 'even'=>'#f0fdf4', 'hover'=>'#dcfce7', 'accent'=>'#16a34a'],
+  4 => ['hdr'=>'#1e40af', 'even'=>'#eff6ff', 'hover'=>'#dbeafe', 'accent'=>'#2563eb'],
+  5 => ['hdr'=>'#991b1b', 'even'=>'#fff1f2', 'hover'=>'#fee2e2', 'accent'=>'#b91c1c'],
+];
+$ac = $st_accent[$tp] ?? $st_accent[2];
+
+$gp_periodo = $bdd->query("SELECT id FROM periodos ORDER BY id DESC LIMIT 1")->fetch();
+
+if ($tp == 1) {
+  $sql = "SELECT e.estado AS estado_nombre, s.id, s.fecha, s.fecha_entrega, s.conse,
+                 CONCAT(t.nombre,' ',t.apellido) AS solicitante, ca.cargo, c.colegio,
+                 CONCAT(u.nombres,' ',u.apellidos) AS promotor
+          FROM solicitudes_recursos s
+          JOIN estados_pedidos e ON e.id=s.estado
+          LEFT JOIN trabajadores_colegios t ON s.solicitante=t.id
+          LEFT JOIN cargos ca ON ca.id=t.cargo
+          JOIN colegios c ON c.id=s.id_colegio
+          JOIN usuarios u ON u.id=s.usuario
+          WHERE s.id_periodo='".$gp_periodo['id']."'
+          ORDER BY s.id DESC";
+} elseif ($tp == 2) {
+  if ($_SESSION['tipo'] != 10) {
+    $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable, cal.calendario FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario LEFT JOIN calendarios cal ON c.id_calendario=cal.id WHERE p.estado='1' GROUP BY p.id";
+  } else {
+    $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable, cal.calendario FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario LEFT JOIN calendarios cal ON c.id_calendario=cal.id WHERE p.estado='1' AND (c.cod_zona='".$_SESSION['zona']."' OR c.zona_madre='".$_SESSION['zona']."') GROUP BY p.id";
+  }
+} elseif ($tp == 3) {
+  if ($_SESSION['tipo'] != 10) {
+    $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable, cal.calendario FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario LEFT JOIN calendarios cal ON c.id_calendario=cal.id WHERE p.estado='2' GROUP BY p.id";
+  } else {
+    $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable, cal.calendario FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario LEFT JOIN calendarios cal ON c.id_calendario=cal.id WHERE p.estado='2' AND (c.cod_zona='".$_SESSION['zona']."' OR c.zona_madre='".$_SESSION['zona']."') GROUP BY p.id";
+  }
+} elseif ($tp == 4) {
+  if ($_SESSION['tipo'] != 10) {
+    $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable, cal.calendario FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario LEFT JOIN calendarios cal ON c.id_calendario=cal.id WHERE p.estado='4' GROUP BY p.id";
+  } else {
+    $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable, cal.calendario FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario LEFT JOIN calendarios cal ON c.id_calendario=cal.id WHERE p.estado='4' AND (c.cod_zona='".$_SESSION['zona']."' OR c.zona_madre='".$_SESSION['zona']."') GROUP BY p.id";
+  }
+} else {
+  if ($_SESSION['tipo'] != 10) {
+    $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable, cal.calendario FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario LEFT JOIN calendarios cal ON c.id_calendario=cal.id WHERE p.estado='3' GROUP BY p.id";
+  } else {
+    $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable, cal.calendario FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario LEFT JOIN calendarios cal ON c.id_calendario=cal.id WHERE p.estado='3' AND (c.cod_zona='".$_SESSION['zona']."' OR c.zona_madre='".$_SESSION['zona']."') GROUP BY p.id";
+  }
+}
+
+$req = $bdd->prepare($sql);
+$req->execute();
+$pedidos = $req->fetchAll();
+$total   = count($pedidos);
+
+$sub_zonas_map = [];
+if ($tp != 1) {
+  foreach ($bdd->query("SELECT id, sub_zona FROM sub_zonas")->fetchAll() as $sz)
+    $sub_zonas_map[$sz['id']] = $sz['sub_zona'];
+}
+
+$responsables_uniq = [];
+$empresas_uniq     = [];
+if ($tp != 1) {
+  foreach ($pedidos as $p) {
+    $tipo_p  = intval($p['tipo'] ?? 0);
+    $parts   = explode("/", $p['zona'] ?? '');
+    $empresa = ($tipo_p == 3 || $tipo_p == 1) ? trim($parts[0] ?? '') : trim($p['zona'] ?? '');
+    $resp    = ($tipo_p == 3 || $tipo_p == 1)
+                 ? trim(($p['nombres'] ?? '').' '.($p['apellidos'] ?? ''))
+                 : trim($p['responsable'] ?? '');
+    if ($empresa && !in_array($empresa, $empresas_uniq))    $empresas_uniq[]     = $empresa;
+    if ($resp    && !in_array($resp,    $responsables_uniq)) $responsables_uniq[] = $resp;
+  }
+  sort($empresas_uniq);
+  sort($responsables_uniq);
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <!-- Basic Page Info -->
-    <meta charset="utf-8" />
-    <title>Inkpulse - Muestreo</title>
+<head>
+  <meta charset="utf-8" />
+  <title>Inkpulse - Muestreo</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="vendors/images/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="vendors/images/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="vendors/images/favicon-16x16.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="src/plugins/datatables/css/dataTables.bootstrap4.min.css" />
+  <link rel="stylesheet" type="text/css" href="src/plugins/datatables/css/responsive.bootstrap4.min.css" />
+  <link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+  <link rel="stylesheet" type="text/css" href="vendors/styles/icon-font.min.css" />
+  <link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+  <style>
+    .lm-status-badge { display:inline-flex; align-items:center; gap:5px; font-size:13px; font-weight:600; padding:3px 12px; border-radius:20px; margin-left:10px; vertical-align:middle; }
+    .lm-badge-yellow { background:#fef3c7; color:#b45309; }
+    .lm-badge-green  { background:#dcfce7; color:#15803d; }
+    .lm-badge-blue   { background:#dbeafe; color:#1d4ed8; }
+    .lm-badge-red    { background:#fee2e2; color:#dc2626; }
+    .lm-badge-purple { background:#ede9fe; color:#6d28d9; }
+    .lm-count-badge  { font-size:12px; color:#64748b; background:#f1f5f9; border-radius:20px; padding:3px 10px; font-weight:500; }
+    .ft-date-wrap    { display:flex; align-items:center; gap:6px; }
+    .ft-date-label   { font-size:12px; color:#64748b; font-weight:600; white-space:nowrap; margin:0; }
+    .estado-badge    { display:inline-block; padding:2px 10px; border-radius:12px; font-size:11px; font-weight:600; }
+    .eb-pending  { background:#fef3c7; color:#b45309; }
+    /* ── Color temático por estado ─────────────────────────────── */
+    #lm-table thead th {
+      background: <?= $ac['hdr'] ?> !important;
+      color: #fff !important;
+      font-weight: 600;
+      font-size: 0.80rem;
+      padding: 11px 12px;
+      white-space: nowrap;
+      border: none;
+    }
+    #lm-table tbody tr:nth-child(even) td { background: <?= $ac['even'] ?>; }
+    #lm-table tbody tr:hover td           { background: <?= $ac['hover'] ?> !important; }
+    #lm-table tbody tr                    { border-left: 3px solid transparent; transition: border-color .15s; }
+    #lm-table tbody tr:hover              { border-left-color: <?= $ac['accent'] ?>; }
+    .lm-btn-ver {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 7px; font-size: 12px; font-weight: 600;
+      border: 1.5px solid <?= $ac['accent'] ?>; color: <?= $ac['accent'] ?>; background: transparent;
+      text-decoration: none; white-space: nowrap; transition: background .15s, color .15s;
+    }
+    .lm-btn-ver:hover { background: <?= $ac['accent'] ?>; border-color: <?= $ac['accent'] ?>; color: #fff; text-decoration: none; }
+    @page { margin: 15px; size: landscape; }
+    @media print {
+      a, .left-side-bar, .header, .d-print-none { display: none !important; }
+      a[href]:after { content: none !important; }
+      body { font-size: 8px; }
+      .main-container, .pd-ltr-20, .table-responsive { overflow: visible !important; }
+      #lm-table { width: 100% !important; table-layout: auto !important; font-size: 7.5px !important; }
+      #lm-table th, #lm-table td { padding: 3px 4px !important; }
+      #lm-table thead th { background: #1e40af !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      #lm-table thead, #lm-table tfoot { display: table-row-group !important; }
+      table { page-break-inside: auto; }
+      tr    { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
 
-    <!-- Site favicon -->
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="vendors/images/apple-touch-icon.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="vendors/images/favicon-32x32.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="vendors/images/favicon-16x16.png"
-    />
+<?php include("template/nav_side.php"); ?>
+<div class="main-container">
+  <div class="pd-ltr-20 xs-pd-20-10">
+    <div class="min-height-200px">
 
-    <!-- Mobile Specific Metas -->
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1"
-    />
-
-    <!-- Google Font -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <!-- CSS -->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="src/plugins/datatables/css/dataTables.bootstrap4.min.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
-    />
-
-    <link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="vendors/styles/icon-font.min.css"
-    />
-    <link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
-
-    
-  </head>
-  <body>
-    
-    <?php include("template/nav_side.php"); ?>
-    <div class="main-container">
-      <div class="pd-ltr-20 xs-pd-20-10">
-        <div class="min-height-200px">
-          <div class="page-header">
-            <div class="row">
-              <div class="col-md-6 col-sm-12">
-                <div class="title">
-                  <h4>Muestreo</h4>
-                </div>
-                <nav aria-label="breadcrumb" role="navigation">
-                  <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                      Muestreo
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                      <?php if($_GET["tp"]==2) {  ?>
-                        Pendientes
-                      <?php } else if($_GET["tp"]==3) {  ?>
-                        Aprobados
-                      <?php  }elseif($_GET["tp"]==4) { ?>
-                        Despachados
-                      <?php  }else{ ?>
-                        Anulados
-                      <?php  } ?>
-                    </li>
-                  </ol>
-                </nav>
-              </div>
-              
+      <div class="page-header">
+        <div class="row align-items-center">
+          <div class="col-md-8 col-sm-12">
+            <div class="title">
+              <h4>
+                Muestreo
+                <span class="lm-status-badge <?= $st['badge'] ?>">
+                  <i class="bi <?= $st['icon'] ?>"></i> <?= $st['label'] ?>
+                </span>
+              </h4>
             </div>
-          </div>
-          <div class="pd-20 bg-white border-radius-4 box-shadow mb-30">
-            
-            <?php 
-
-              $sql_periodo="SELECT id FROM periodos ORDER BY id DESC";
-
-              $req_periodo = $bdd->prepare($sql_periodo);
-              $req_periodo->execute();
-              $gp_periodo = $req_periodo->fetch();
-
-              
-              if ($_GET['tp'] == 1) {
-
-                $sql = "SELECT e.estado, s.id,s.fecha, CONCAT(t.nombre, ' ', t.apellido) as solicitante, ca.cargo, s.fecha_entrega, s.conse, c.colegio, CONCAT (u.nombres, ' ',u.apellidos) as promotor FROM solicitudes_recursos s JOIN estados_pedidos e ON e.id=s.estado LEFT JOIN trabajadores_colegios t ON s.solicitante=t.id LEFT JOIN cargos ca ON ca.id=t.cargo JOIN colegios c ON c.id=s.id_colegio JOIN usuarios u ON u.id=s.usuario WHERE s.id_periodo='".$gp_periodo['id']."' ORDER BY s.id DESC";
-              }elseif ($_GET['tp'] == 2) {
-
-                if ($_SESSION['tipo'] != 10) {
-                    $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario WHERE p.estado='1' GROUP BY p.id";
-                }else{
-                  $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario WHERE p.estado='1' AND (c.cod_zona='".$_SESSION['zona']."' OR c.zona_madre='".$_SESSION['zona']."') GROUP BY p.id";
-                }
-                
-              }elseif ($_GET['tp'] == 3) {
-
-                if ($_SESSION['tipo'] != 10) {
-                    $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario WHERE p.estado='2' GROUP BY p.id";
-                }else{
-                  $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario WHERE p.estado='2' AND (c.cod_zona='".$_SESSION['zona']."' OR c.zona_madre='".$_SESSION['zona']."') GROUP BY p.id";
-                }
-
-              }elseif ($_GET['tp'] == 4) {
-                 if ($_SESSION['tipo'] != 10) {
-                    $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario WHERE p.estado='4' GROUP BY p.id";
-                }else{
-                  $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario WHERE p.estado='4' AND (c.cod_zona='".$_SESSION['zona']."' OR c.zona_madre='".$_SESSION['zona']."') GROUP BY p.id";
-                }
-
-              }else{
-
-                if ($_SESSION['tipo'] != 10) {
-                    $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario WHERE p.estado='3' GROUP BY p.id";
-                }else{
-                  $sql = "SELECT p.id, z.zona, u.nombres, u.apellidos, u.tipo, p.fecha, c.colegio, c.sub_zona, c.responsable FROM muestreos p JOIN colegios c ON p.id_colegio=c.id JOIN zonas z ON z.codigo=c.cod_zona JOIN usuarios u ON u.id=p.id_usuario WHERE p.estado='3' AND (c.cod_zona='".$_SESSION['zona']."' OR c.zona_madre='".$_SESSION['zona']."') GROUP BY p.id";
-                }
-              }
-
-              
-
-              $req = $bdd->prepare($sql);
-              $req->execute();
-              $pedidos = $req->fetchAll();
-                                
-            ?>
-
-            <div class="table-responsive">
-              <table class="table table-striped table-bordered table-hover" id="dataTables-example">
-                <thead>
-                 <th>#</th>
-                  <th>Fecha</th>
-                  <th>Empresa</th>
-                  <th>Zona</th>
-                  <th>Usuario</th>
-                  <th>Colegio</th>    
-                </thead>
-                <tbody>
-                        
-                  <?php 
-                    foreach($pedidos as $pedido) {
-                      $promotor= $pedido["nombres"]." ".$pedido["apellidos"];
-
-                      echo'<tr class="odd gradeX">';
-                      echo'<td class="center">'.$pedido["id"].'</td>';
-                      echo'<td class="center">'.$pedido["fecha"].'</td>';
-                      if ($pedido['tipo']==3 || $pedido['tipo']==1) {
-                        list($empresa,$n_zona) = explode("/", $pedido["zona"]);
-                        echo'<td class="center">'.$empresa.'</td>';
-                        echo'<td class="center">'.$n_zona.'</td>';
-                        echo'<td class="center">'.$promotor.'</td>';
-
-                      }else{
-
-                        $sql_sz="SELECT sub_zona FROM sub_zonas WHERE id='".$pedido["sub_zona"]."'";
-                        $req_sz = $bdd->prepare($sql_sz);
-                        $req_sz->execute();
-                        $sub_zona = $req_sz->fetch();
-
-                        echo'<td class="center">'.$pedido["zona"].'</td>';
-                        echo'<td class="center">'.$sub_zona["sub_zona"].'</td>';
-                        echo'<td class="center">'.$pedido["responsable"].'</td>';
-                                                
-                      }
-                      if ($_GET['tp'] != 2) {
-                        echo'<td class="center"><a href="muestreo_colegio_resto.php?id_pedido='.$pedido["id"].'&tp='.$_GET["tp"].'">'.$pedido["colegio"].'</a></td>';
-                      }else{
-                        echo'<td class="center"><a href="muestreo_colegio.php?id_pedido='.$pedido["id"].'">'.$pedido["colegio"].'</a></td>';
-                      }
-                      
-                                                 
-                                               
-                    }
-                  ?>
-                                       
-                </tbody>
-              </table>
-            </div>
-
           </div>
         </div>
-        <?php include("template/footer.php"); ?>
       </div>
+
+      <div class="row">
+        <div class="col-xl-3 col-lg-4 col-md-6">
+          <div class="stat-card-modern">
+            <div class="stat-icon-modern" style="background:<?= $ac['hover'] ?>;color:<?= $ac['accent'] ?>">
+              <i class="bi <?= $st['icon'] ?>"></i>
+            </div>
+            <div class="stat-info-modern">
+              <h3><?= $total ?></h3>
+              <p class="stat-label"><?= $st['label'] ?></p>
+              <span class="stat-sub">Total de registros</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-toolbar">
+        <div class="ft-search">
+          <i class="bi bi-search ft-search-icon"></i>
+          <input type="text" id="lm-search" placeholder="Buscar por colegio, responsable, empresa...">
+        </div>
+        <?php if ($tp != 1 && !empty($responsables_uniq)): ?>
+        <select class="ft-select" id="lm-responsable">
+          <option value="">Todos los responsables</option>
+          <?php foreach ($responsables_uniq as $r): ?>
+          <option value="<?= htmlspecialchars($r) ?>"><?= htmlspecialchars($r) ?></option>
+          <?php endforeach; ?>
+        </select>
+        <?php endif; ?>
+        <?php if ($tp != 1 && !empty($empresas_uniq)): ?>
+        <select class="ft-select" id="lm-empresa">
+          <option value="">Todas las empresas</option>
+          <?php foreach ($empresas_uniq as $e): ?>
+          <option value="<?= htmlspecialchars($e) ?>"><?= htmlspecialchars($e) ?></option>
+          <?php endforeach; ?>
+        </select>
+        <?php endif; ?>
+        <div class="ft-date-wrap">
+          <span class="ft-date-label">Desde</span>
+          <input type="date" class="ft-select" id="lm-fecha-desde" style="min-width:140px">
+        </div>
+        <div class="ft-date-wrap">
+          <span class="ft-date-label">Hasta</span>
+          <input type="date" class="ft-select" id="lm-fecha-hasta" style="min-width:140px">
+        </div>
+        <button class="ft-btn ft-apply" id="lm-btn-apply"><i class="bi bi-funnel"></i> Filtrar</button>
+        <button class="ft-btn ft-clear" id="lm-btn-clear"><i class="bi bi-x-circle"></i> Limpiar</button>
+      </div>
+
+      <div class="modern-card">
+        <div class="card-head">
+          <h5><i class="bi bi-list-ul mr-2"></i> Lista — <?= $st['label'] ?></h5>
+          <span class="lm-count-badge" style="background:<?= $ac['hover'] ?>;color:<?= $ac['accent'] ?>"><?= $total ?> registros</span>
+        </div>
+        <div class="table-responsive px-2 pb-2">
+
+          <?php if ($tp == 1): ?>
+          <table class="table table-sm table-hover" id="lm-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Conse</th>
+                <th>Fecha</th>
+                <th>Fecha entrega</th>
+                <th>Solicitante</th>
+                <th>Cargo</th>
+                <th>Colegio</th>
+                <th>Promotor</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($pedidos as $p):
+                $fecha_d = date('d/m/Y', strtotime($p['fecha']));
+                $fecha_e = $p['fecha_entrega'] ? date('d/m/Y', strtotime($p['fecha_entrega'])) : '—';
+                $fecha_r = substr($p['fecha'], 0, 10);
+              ?>
+              <tr data-date="<?= $fecha_r ?>">
+                <td><?= $p['id'] ?></td>
+                <td><?= htmlspecialchars($p['conse']) ?></td>
+                <td><?= $fecha_d ?></td>
+                <td><?= $fecha_e ?></td>
+                <td><?= htmlspecialchars($p['solicitante'] ?? '—') ?></td>
+                <td><?= htmlspecialchars($p['cargo'] ?? '—') ?></td>
+                <td><?= htmlspecialchars($p['colegio']) ?></td>
+                <td><?= htmlspecialchars($p['promotor']) ?></td>
+                <td><span class="estado-badge eb-pending"><?= htmlspecialchars($p['estado_nombre']) ?></span></td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+
+          <?php else: ?>
+          <table class="table table-sm table-hover" id="lm-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Empresa</th>
+                <th>Zona</th>
+                <th>Responsable</th>
+                <th>Colegio</th>
+                <th>Calendario</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($pedidos as $p):
+                $tipo_p   = intval($p['tipo'] ?? 0);
+                if ($tipo_p == 3 || $tipo_p == 1) {
+                  $parts    = explode("/", $p['zona'] ?? '');
+                  $empresa  = htmlspecialchars(trim($parts[0] ?? ''));
+                  $n_zona   = htmlspecialchars(trim($parts[1] ?? ''));
+                  $resp     = htmlspecialchars(trim(($p['nombres'] ?? '').' '.($p['apellidos'] ?? '')));
+                  $raw_emp  = trim($parts[0] ?? '');
+                  $raw_resp = trim(($p['nombres'] ?? '').' '.($p['apellidos'] ?? ''));
+                } else {
+                  $empresa  = htmlspecialchars($p['zona'] ?? '');
+                  $n_zona   = htmlspecialchars($sub_zonas_map[$p['sub_zona']] ?? '—');
+                  $resp     = htmlspecialchars($p['responsable'] ?? '—');
+                  $raw_emp  = $p['zona'] ?? '';
+                  $raw_resp = $p['responsable'] ?? '';
+                }
+                $fecha_d = date('d/m/Y', strtotime($p['fecha']));
+                $fecha_r = substr($p['fecha'], 0, 10);
+                $url_detalle = ($tp == 2)
+                  ? "muestreo_colegio.php?id_pedido={$p['id']}"
+                  : "muestreo_colegio_resto.php?id_pedido={$p['id']}&tp={$tp}";
+              ?>
+              <tr data-date="<?= $fecha_r ?>" data-responsable="<?= htmlspecialchars($raw_resp) ?>" data-empresa="<?= htmlspecialchars($raw_emp) ?>">
+                <td><?= $p['id'] ?></td>
+                <td><?= $fecha_d ?></td>
+                <td><?= $empresa ?></td>
+                <td><?= $n_zona ?></td>
+                <td><?= $resp ?></td>
+                <td><?= htmlspecialchars($p['colegio']) ?></td>
+                <td><?= htmlspecialchars($p['calendario'] ?? '—') ?></td>
+                <td>
+                  <a href="<?= $url_detalle ?>" class="lm-btn-ver">
+                    <i class="bi bi-eye"></i> Ver detalle
+                  </a>
+                </td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+          <?php endif; ?>
+
+        </div>
+      </div>
+
     </div>
-    
-    <!-- js -->
-    <script src="vendors/scripts/core.js"></script>
-    <script src="vendors/scripts/script.min.js"></script>
-    <script src="vendors/scripts/process.js"></script>
-    <script src="vendors/scripts/layout-settings.js"></script>
-    <script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
-    <script src="src/plugins/datatables/js/dataTables.responsive.min.js"></script>
-    <script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+    <?php include("template/footer.php"); ?>
+  </div>
+</div>
 
-    <script>
-      
-      $(document).ready(function () {
-        $('#dataTables-example').dataTable({
+<script src="vendors/scripts/core.js"></script>
+<script src="vendors/scripts/script.min.js"></script>
+<script src="vendors/scripts/process.js"></script>
+<script src="vendors/scripts/layout-settings.js"></script>
+<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+<script src="src/plugins/datatables/js/dataTables.responsive.min.js"></script>
+<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function () {
+  var table;
 
-          "language": {
-            "lengthMenu": "Display _MENU_ registros por página",
-            "zeroRecords": "Nada encontrado, lo siento",
-            "info": "Mostrando página _PAGE_ de _PAGES_",
-            "infoEmpty": "No hay registros disponibles",
-            "infoFiltered": "(filtrado de _MAX_ registros en total )",
-            "search": "Buscar&nbsp;:",
-            paginate: {
-              first:"Primero",
-              previous:"Anterior",
-              next:"Siguiente",
-              last:"Último"
-            }
-          },
-          order: [[0, 'desc']]
-        });
-      });
+  $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+    if (settings.nTable.id !== 'lm-table') return true;
+    var resp    = $('#lm-responsable').val();
+    var empresa = $('#lm-empresa').val();
+    var desde   = $('#lm-fecha-desde').val();
+    var hasta   = $('#lm-fecha-hasta').val();
+    if (table) {
+      var $row = $(table.row(dataIndex).node());
+      if (resp    && $row.data('responsable') !== resp)    return false;
+      if (empresa && $row.data('empresa')     !== empresa) return false;
+      if (desde || hasta) {
+        var raw = $row.data('date') || '';
+        if (desde && raw < desde) return false;
+        if (hasta && raw > hasta) return false;
+      }
+    }
+    return true;
+  });
 
-      $(".vista_soli" ).click(function( e ) {
+  table = $('#lm-table').DataTable({
+    autoWidth:  false,
+    order:      [[0, 'desc']],
+    language: {
+      lengthMenu:   'Mostrar _MENU_ registros',
+      zeroRecords:  'No se encontraron resultados',
+      emptyTable:   'No hay información para mostrar',
+      info:         'Mostrando _START_ a _END_ de _TOTAL_ registros',
+      infoEmpty:    'Sin registros disponibles',
+      infoFiltered: '(filtrado de _MAX_ registros)',
+      search:       '',
+      paginate: { first:'«', previous:'‹', next:'›', last:'»' }
+    },
+    initComplete: function () { $('.dataTables_filter').hide(); }
+  });
 
-        e.preventDefault();
-        var url= $(this).attr("href")
-        var caracteristicas = "height=700,width=1300,scrollTo,resizable=1,scrollbars=1,location=0";
-        nueva=window.open(url, "Popup", caracteristicas);
-
-      })
-
-
-    </script>
-    
-  </body>
+  $('#lm-search').on('keyup', function () { table.search(this.value).draw(); });
+  $('#lm-btn-apply').on('click', function () { table.draw(); });
+  $('#lm-fecha-desde, #lm-fecha-hasta').on('change', function () { table.draw(); });
+  $('#lm-btn-clear').on('click', function () {
+    $('#lm-search').val('');
+    $('#lm-responsable, #lm-empresa').val('');
+    $('#lm-fecha-desde, #lm-fecha-hasta').val('');
+    table.search('').draw();
+  });
+});
+</script>
+<script src="src/ink-alerts.js"></script>
+</body>
 </html>

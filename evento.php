@@ -88,18 +88,27 @@
               list($a,$m,$d)=explode("-", $fecha);
               $fecha= $d."/".$m."/".$a;
                 
-              $sql_colegio = "SELECT id,codigo, colegio, barrio, direccion,telefono FROM colegios WHERE id='".$visita["id_colegio"]."'";
+              if ($visita['id_colegio'] == 0) {
+                $colegio = [
+                  'id' => 0, 'codigo' => '', 'barrio' => '', 'direccion' => '', 'telefono' => '',
+                  'colegio' => $visita['otro_lugar'] ?: 'Otro lugar',
+                ];
+              } else {
+                $sql_colegio = "SELECT id,codigo, colegio, barrio, direccion,telefono FROM colegios WHERE id='".$visita["id_colegio"]."'";
+                $req_colegio = $bdd->prepare($sql_colegio);
+                $req_colegio->execute();
+                $colegio = $req_colegio->fetch();
+              }
 
-              $req_colegio = $bdd->prepare($sql_colegio);
-              $req_colegio->execute();
-              $colegio = $req_colegio->fetch();
 
-
-              $sql_objetivo = "SELECT objetivo FROM objetivos WHERE id='".$visita["id_objetivo"]."'";
-
-              $req_objetivo = $bdd->prepare($sql_objetivo);
-              $req_objetivo->execute();
-              $objetivo = $req_objetivo->fetch();
+              if ($visita['id_objetivo'] == 0) {
+                $objetivo = ['objetivo' => $visita['otro_objetivo'] ?: 'Otro'];
+              } else {
+                $sql_objetivo = "SELECT objetivo FROM objetivos WHERE id='".$visita["id_objetivo"]."'";
+                $req_objetivo = $bdd->prepare($sql_objetivo);
+                $req_objetivo->execute();
+                $objetivo = $req_objetivo->fetch();
+              }
 
               $sql_grado = "SELECT grado FROM grados a JOIN grados_materias b ON a.id=b.id_grado WHERE cod_profesor='".$visita["cod_profesor"]."'";
 
@@ -125,6 +134,10 @@
                 $partics.=$participante["parti"]." (".ucfirst($tipo_noti[1])."), ";
 
               }
+
+              if (!empty($visita['otro_participante'])) {
+                $partics .= $visita['otro_participante'] . " (Externo), ";
+              }
    
                 
             ?>
@@ -137,7 +150,7 @@
                             
                 <tr>
                   <td>Colegio: <?php echo $colegio['colegio']; ?></td>
-                  <td>Telefonos: <?php echo $colegio['telefono']; ?></td>
+                  <td>Teléfonos: <?php echo $colegio['telefono']; ?></td>
                 </tr>
                 <tr>
                   <td>Barrio: <?php echo $colegio['barrio']; ?></td>
@@ -232,7 +245,7 @@
                 </div>
                 <div class="col-sm-4">
                   <div class="form-group">
-                    <label for="telefono_p" class="control-label no-padding-right">Telefono<small style="color:red;"> *</small></label>
+                    <label for="telefono_p" class="control-label no-padding-right">Teléfono<small style="color:red;"> *</small></label>
                     <input type="tel" name="telefono_p" id="telefono_p" class="form-control" placeholder="" required>
                   </div>
 

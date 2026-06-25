@@ -96,7 +96,7 @@ $objSpreadsheet->getActiveSheet()->SetCellValue("E4", "Departamento");
 $objSpreadsheet->getActiveSheet()->SetCellValue("F4", "Ciudad");
 $objSpreadsheet->getActiveSheet()->SetCellValue("G4", "Barrio");
 $objSpreadsheet->getActiveSheet()->SetCellValue("H4", "Dirección");
-$objSpreadsheet->getActiveSheet()->SetCellValue("I4", "Telefono");
+$objSpreadsheet->getActiveSheet()->SetCellValue("I4", "Teléfono");
 $objSpreadsheet->getActiveSheet()->SetCellValue("J4", "Status");
 $objSpreadsheet->getActiveSheet()->SetCellValue("K4", "Propuesta comercial");
 $objSpreadsheet->getActiveSheet()->getStyle("A1:K1")->getFont()->getColor()->applyFromArray(
@@ -231,9 +231,9 @@ foreach (excelColumnRange('AA', 'ZZ') as $columnID) {
 $objWriter = new Xlsx($objSpreadsheet); //Escribir archivo
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 if ($_POST['promo']!=0) {
-	header('Content-Disposition: attachment; filename="Zonifición_'.$nombre_completo.'.xlsx"');
+	header('Content-Disposition: attachment; filename="Zonificación_'.$nombre_completo.'.xlsx"');
 }else{
-	header('Content-Disposition: attachment; filename="Zonifición_general.xlsx"');
+	header('Content-Disposition: attachment; filename="Zonificación_general.xlsx"');
 }
 
 header('Cache-Control: max-age=0');

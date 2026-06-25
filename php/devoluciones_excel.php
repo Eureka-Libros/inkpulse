@@ -61,7 +61,7 @@ $estilo_negrita = array(
 	$objSpreadsheet->getActiveSheet()->SetCellValue("B2", "$usuario[nombre_c]");*/
 	$objSpreadsheet->getActiveSheet()->SetCellValue("D1", "Fecha");
 	$objSpreadsheet->getActiveSheet()->SetCellValue("D2", "$fecha");
-	$objSpreadsheet->getActiveSheet()->SetCellValue("A4", "# Devol");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("A4", "# Devolución");
 	$objSpreadsheet->getActiveSheet()->SetCellValue("B4", "Usuario");
 	$objSpreadsheet->getActiveSheet()->SetCellValue("C4", "Fecha");
 	$objSpreadsheet->getActiveSheet()->SetCellValue("D4", "Estado");
@@ -69,9 +69,9 @@ $estilo_negrita = array(
 	$objSpreadsheet->getActiveSheet()->SetCellValue("F4", "Isbn");
 	$objSpreadsheet->getActiveSheet()->SetCellValue("G4", "Libro");
 	$objSpreadsheet->getActiveSheet()->SetCellValue("H4", "PVP");
-	$objSpreadsheet->getActiveSheet()->SetCellValue("I4", "Desc.");
-	$objSpreadsheet->getActiveSheet()->SetCellValue("J4", "Precio Fact.");
-	$objSpreadsheet->getActiveSheet()->SetCellValue("K4", "Cant.");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("I4", "Descuento");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("J4", "Precio Facturación");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("K4", "Cantidad");
 	$objSpreadsheet->getActiveSheet()->SetCellValue("L4", "Valor");
 	$objSpreadsheet->getActiveSheet()->SetCellValue("M4", "Observaciones");
 

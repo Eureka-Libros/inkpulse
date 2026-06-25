@@ -20,7 +20,20 @@
 	$gp_periodo = $req_periodo->fetch();
 
 	$colegio = $_POST['cole'];
-	//$objetivo = $_POST['objetivo'];
+
+	// Manejo del archivo adjunto
+	$archivo_path = '';
+	if (isset($_FILES['archivo_muestreo']) && $_FILES['archivo_muestreo']['error'] === UPLOAD_ERR_OK) {
+		$uploads_dir = dirname(__DIR__) . '/uploads/muestreos/';
+		if (!is_dir($uploads_dir)) mkdir($uploads_dir, 0755, true);
+		$filename = str_replace(['/', '\\', "\0"], '', $_FILES['archivo_muestreo']['name']);
+		if (move_uploaded_file($_FILES['archivo_muestreo']['tmp_name'], $uploads_dir . $filename)) {
+			$archivo_path = 'uploads/muestreos/' . $filename;
+		}
+	}
+
+	$bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	try {
 
 	do {
 	    $caracteres = "1234567890"; //posibles caracteres a usar
@@ -47,6 +60,8 @@
 
 
 	foreach ($_POST["libro_e"] as $libros => $libro) {
+
+		if (empty($libro) || strpos($libro, '/') === false) continue;
 
 		list($id_libro,$cantidad) = explode("/", $libro);
 				
@@ -83,7 +98,7 @@
 
 	}
 
-	foreach ($_POST['pri_sec'] as $index => $id_libro) {
+	foreach ($_POST['pri_sec'] ?? [] as $index => $id_libro) {
     	$cantidad = $_POST['cantidad_pri_sec'][$index];
 
     	if ($cantidad > 0) {
@@ -119,10 +134,10 @@
 
 	if ($_POST['tp']!=2) {
 
-		$sql_p2 = "INSERT INTO muestreos(codigo,id_periodo,id_colegio,id_usuario,observaciones,estado) VALUES('".$cod_pedido."','".$gp_periodo["id"]."','".$colegio."','".$_SESSION["id"]."','".$_POST["observaciones"]."','1')";
+		$sql_p2 = "INSERT INTO muestreos(codigo,id_periodo,id_colegio,id_usuario,observaciones,estado,archivo) VALUES('".$cod_pedido."','".$gp_periodo["id"]."','".$colegio."','".$_SESSION["id"]."','".$_POST["observaciones"]."','1','".$archivo_path."')";
 	}else{
 
-		$sql_p2 = "INSERT INTO muestreos_e(codigo,id_periodo,id_colegio,id_usuario,observaciones,estado) VALUES('".$cod_pedido."','".$gp_periodo["id"]."','".$colegio."','".$_SESSION["id"]."','".$_POST["observaciones"]."','1')";
+		$sql_p2 = "INSERT INTO muestreos_e(codigo,id_periodo,id_colegio,id_usuario,observaciones,estado,archivo) VALUES('".$cod_pedido."','".$gp_periodo["id"]."','".$colegio."','".$_SESSION["id"]."','".$_POST["observaciones"]."','1','".$archivo_path."')";
 	}
 				
 				
@@ -210,6 +225,16 @@
 
 
 
-	header('Location: '.$_SERVER['HTTP_REFERER']);
+	$_ref = $_SERVER['HTTP_REFERER'] ?? '../solicitar_muestreo.php?tp=1';
+	$_sep = strpos($_ref, '?') !== false ? '&' : '?';
+	header('Location: ' . $_ref . $_sep . 'status=ok');
+	exit;
+
+	} catch (Exception $e) {
+		$_ref = $_SERVER['HTTP_REFERER'] ?? '../solicitar_muestreo.php?tp=1';
+		$_sep = strpos($_ref, '?') !== false ? '&' : '?';
+		header('Location: ' . $_ref . $_sep . 'status=error');
+		exit;
+	}
 
 ?>
