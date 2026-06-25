@@ -28,7 +28,7 @@ if ($_SESSION['tipo'] == 1 || $_SESSION['tipo'] == 2) {
             JOIN clientes c ON c.id=p.cliente
             LEFT JOIN colegios i ON i.id=p.id_colegio
             LEFT JOIN presupuestos pr ON i.id=pr.id_colegio
-            WHERE pr.cod_zona='".$_SESSION['zona']."' OR i.zona_madre='".$_SESSION['zona']."' GROUP BY pr.id_colegio";
+            WHERE pr.cod_zona='".$_SESSION['zona']."' OR i.zona_madre='".$_SESSION['zona']."' GROUP BY pr.id_colegio, p.id";
 }
 
 $req = $bdd->prepare($sql);

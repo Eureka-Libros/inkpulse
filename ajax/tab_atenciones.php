@@ -646,6 +646,7 @@
         ?>
         <tr data-legal="<?= $es_legal ? '1' : '0' ?>">
           <td><a href="vista_solicitud.php?id=<?= $sol['id'] ?>" class="at-link vista_soli"><?= htmlspecialchars($num) ?></a></td>
+          <td><a href="vista_solicitud.php?id=<?= $sol['id'] ?>" class="at-link vista_soli"><?= $sol['conse'] ?></a></td>
           <td><?= htmlspecialchars($sol['fecha']) ?></td>
           <td><?= htmlspecialchars($sol['solicitante'].' ('.$sol['cargo'].')') ?></td>
           <td><?= htmlspecialchars($sol['fecha_entrega']) ?></td>

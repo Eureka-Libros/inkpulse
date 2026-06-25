@@ -36,7 +36,7 @@
         <div class="sm-section-body">
           <form action="php/valoriza_global_excel.php" method="POST">
             <div class="row">
-              <?php if ($_SESSION['tipo'] == 1 || $_SESSION['tipo'] == 2 || $_SESSION['tipo'] == 7): ?>
+              <?php if ($_SESSION['tipo'] == 1 || $_SESSION['tipo'] == 2 || $_SESSION['tipo'] == 7 || $_SESSION['tipo'] == 9): ?>
               <div class="col-md-5 col-12 mb-3">
                 <label class="control-label">Usuario <small style="color:red;">*</small></label>
                 <select name="promotor" id="promo" class="form-control custom-select2" required>
