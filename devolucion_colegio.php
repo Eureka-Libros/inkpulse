@@ -8,20 +8,21 @@ $req_base = $bdd->prepare("SELECT id FROM devoluciones_v WHERE id='".$id_pedido.
 $req_base->execute();
 $base = $req_base->fetch();
 
-$sql_ped = "SELECT pe.fecha,pe.tipo as petipo,pe.observaciones, pe.cliente,
-            z.codigo as codzona, z.zona, c.id as cid, c.colegio, c.sub_zona,
-            c.responsable, u.nombres, u.apellidos, u.tipo, e.id as eid,e.estado
+$sql_ped = "SELECT pe.fecha, pe.tipo as petipo, pe.observaciones, pe.cliente,
+                   z.codigo as codzona, z.zona, c.id as cid, c.colegio, c.sub_zona, c.responsable,
+                   cal.calendario,
+                   u.nombres, u.apellidos, u.tipo, e.id as eid, e.estado
             FROM devoluciones_v pe
             JOIN colegios c ON pe.id_colegio=c.id
-            JOIN presupuestos pr ON pr.id_colegio=pe.id_colegio
-            JOIN zonas z ON z.codigo=pr.cod_zona
-            JOIN usuarios u ON u.cod_zona=pr.cod_zona
+            JOIN zonas z ON z.codigo=c.cod_zona
+            JOIN usuarios u ON u.cod_zona=z.codigo
             JOIN estados_dev e ON e.id=pe.estado
-            WHERE pe.id='".$pedido["id"]."'AND pe.id_colegio > 0";
+            LEFT JOIN calendarios cal ON c.id_calendario=cal.id
+            WHERE pe.id='".$base['id']."' AND id_colegio > 0";
 $req_ped = $bdd->prepare($sql_ped);
 $req_ped->execute();
 $pedido  = $req_ped->fetch();
-$n_cole  = $req_ped->rowCount();
+$n_cole  = ($pedido !== false) ? 1 : 0;
 
 if ($n_cole > 0) {
     $sql_libros = "SELECT pe.id, l.id as libroid, l.id_grado, l.libro, l.precio, l.isbn,
@@ -132,6 +133,10 @@ if ($n_cole > 0) {
       .mc-actions, .breadcrumb, .d-print-none, .left-side-bar, .header { display: none !important; }
       a[href]:after { content: none !important; }
       body { font-size: 9px; }
+      #dc-table { width: 100% !important; table-layout: auto !important; }
+      #dc-table th, #dc-table td { display: table-cell !important; }
+      #dc-table thead th { padding: 6px 5px !important; font-size: .72rem !important; }
+      #dc-table tbody td, #dc-table tfoot td { padding: 5px !important; font-size: .72rem !important; }
     }
 
     /* Info cards (legacy — usado por JS print) */
