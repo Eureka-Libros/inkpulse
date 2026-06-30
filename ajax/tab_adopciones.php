@@ -1,26 +1,26 @@
 <?php
-	/*ini_set("display_errors", 1);
+  /*ini_set("display_errors", 1);
 
-	ini_set("display_startup_errors", 1);
+  ini_set("display_startup_errors", 1);
 
-	error_reporting(E_ALL);*/
+  error_reporting(E_ALL);*/
 
-	require_once("../php/aut.php");
-  	include("../conexion/bdd.php");
+  require_once("../php/aut.php");
+    include("../conexion/bdd.php");
 
-	$sql_periodo="SELECT * FROM periodos WHERE id='".$_GET['periodo']."'";
+  $sql_periodo="SELECT * FROM periodos WHERE id='".$_GET['periodo']."'";
 
-	$req_periodo = $bdd->prepare($sql_periodo);
-	$req_periodo->execute();
-	$gp_periodo = $req_periodo->fetch();
+  $req_periodo = $bdd->prepare($sql_periodo);
+  $req_periodo->execute();
+  $gp_periodo = $req_periodo->fetch();
 
-	$sql_hp = "SELECT id FROM presupuestos WHERE id_periodo='".$gp_periodo["id"]."' AND id_colegio='".$_GET["colegio"]."'";
-	$req_hp = $bdd->prepare($sql_hp);
-	$req_hp->execute();
-	$num_hp = $req_hp->rowCount();
+  $sql_hp = "SELECT id FROM presupuestos WHERE id_periodo='".$gp_periodo["id"]."' AND id_colegio='".$_GET["colegio"]."'";
+  $req_hp = $bdd->prepare($sql_hp);
+  $req_hp->execute();
+  $num_hp = $req_hp->rowCount();
 
-	$show_guardar = ($num_hp >= 1 && $_SESSION["tipo"] != 4) &&
-		(!($_SESSION['tipo'] == 3 && $_SESSION["zona"] != '5656') || $_GET["f_cierre"] > date("Y-m-d"));
+  $show_guardar = ($num_hp >= 1 && $_SESSION["tipo"] != 4) &&
+    (!($_SESSION['tipo'] == 3 && $_SESSION["zona"] != '5656') || $_GET["f_cierre"] > date("Y-m-d"));
 ?>
 
 <style>
@@ -113,10 +113,6 @@
     border-bottom: 2px solid #e2e8f0;
     font-size: 0.79rem;
     letter-spacing: .02em;
-    /* encabezado pegajoso para que siempre sea visible al bajar */
-    position: sticky;
-    top: 0;
-    z-index: 2;
   }
   #dataTables-adop thead th:first-child { text-align: left; padding-left: 14px; }
   /* ocultar flechas de ordenamiento de DataTables */
@@ -627,7 +623,7 @@
         $req_exist_d->execute();
         $ids_exist_adop = array_map('intval', array_column($req_exist_d->fetchAll(PDO::FETCH_ASSOC), 'id_libro_eureka'));
 
-		echo "<form action='php/guardar_definicion.php' class='miFormulario' method='POST' id='form_definicion' name='f2' enctype='multipart/form-data'>";
+    echo "<form action='php/guardar_definicion.php' class='miFormulario' method='POST' id='form_definicion' name='f2' enctype='multipart/form-data'>";
                               
             echo "<div class='ad-table-wrap mt-2'>
                 <table id='dataTables-adop'>
@@ -674,8 +670,6 @@
                                 $req_gp = $bdd->prepare($sq_gp);
                                 $req_gp->execute();
                                 $gp = $req_gp->fetch();
-
-                                echo '<script>alert('.$presup["definido"].')</script>';
 
                                  echo "<tr data-adoptado='".($presup["definido"]==1?'1':'0')."'>
                                     <td>".$libro."</td>
@@ -798,14 +792,14 @@
                                         if ($presup["definido"] ==1) {
                                             echo "<td><input type='checkbox' name='definir[]' class='definir' checked value='".$libro2["id"]."/'".$presup["id"]."></td>";
                                         }
-	                                    else {
+                                      else {
 
-	                                        echo "<td><input type='checkbox' name='definir[]' class='definir' value='".$libro2["id"]."/1".$presup["id"]."'></td>";
+                                          echo "<td><input type='checkbox' name='definir[]' class='definir' value='".$libro2["id"]."/1".$presup["id"]."'></td>";
 
-	                                    }
-                                	}else {
-                                    	echo"<td></td>";
-                                	}
+                                      }
+                                  }else {
+                                      echo"<td></td>";
+                                  }
 
 
                                     echo "<input type='hidden' name='presupuesto_d[]' value='".$libro2["id"]."' id='presupuesto_d".$libro2["id"]."'>
@@ -1223,10 +1217,10 @@
 
 
                                             if ($_SESSION['tipo']!=6) {
-	                                    		echo "var desc_max=parseFloat(".$libro_p["desc_max"].")* 100;";
-			                                }else{
-			                                        	echo "var desc_max=parseFloat(".$libro_p["desc_max_dist"].")* 100;";
-			                                }
+                                          echo "var desc_max=parseFloat(".$libro_p["desc_max"].")* 100;";
+                                      }else{
+                                                echo "var desc_max=parseFloat(".$libro_p["desc_max_dist"].")* 100;";
+                                      }
 
                                             if ($_SESSION['tipo']!=1) {
                                                 
@@ -1253,20 +1247,20 @@
                                                 }
 
                                             }
-		                                    
+                                        
                                             
                                             if ($_SESSION['tipo']!=1) {
-    		                                    echo"
+                                            echo"
 
-    		                                    if (desc_max > 0){
-    		                                    	if (descuento > desc_max){
+                                            if (desc_max > 0){
+                                              if (descuento > desc_max){
 
-    				                                    alert('el descuento no debe superar: '+desc_max);
-    				                                    $('#descuento_d".$libro_p["id"]."').val(desc_max);
-    				                                    $('#descuento_d".$libro_p["id"]."').focus();
-    				                                    descuento=desc_max;
-    			                                	}
-    		                                    }";
+                                                alert('el descuento no debe superar: '+desc_max);
+                                                $('#descuento_d".$libro_p["id"]."').val(desc_max);
+                                                $('#descuento_d".$libro_p["id"]."').focus();
+                                                descuento=desc_max;
+                                            }
+                                            }";
                                             }
                                            echo"descuento= descuento/100;
 
@@ -1531,7 +1525,7 @@
 
                           // Canal de venta
                           echo '<div class="col-sm-3">
-                                  <span class="ad-footer-form form-label-sm">
+                                  <span class="form-label-sm">
                                     <i class="bi bi-shop"></i> Canal de venta
                                   </span>
                                   <select name="canal" id="canal" class="form-control materia">
@@ -1564,7 +1558,7 @@
                                   $arch_req_badge = $arch_existente ? '' : ' <span style="color:#dc2626">*</span>';
 
                                   echo '<div class="col-sm-4">
-                                          <span class="ad-footer-form form-label-sm">
+                                          <span class="form-label-sm">
                                             <i class="bi bi-paperclip"></i> Acuerdo de adopción'.$arch_req_badge.'
                                           </span>
                                           <label class="ad-file-label'.$arch_label_class.'" id="ad-file-label" for="archivo_adopcion">
@@ -1578,7 +1572,7 @@
                               } else {
                                   // Periodo cerrado: solo lectura
                                   echo '<div class="col-sm-4">
-                                          <span class="ad-footer-form form-label-sm">
+                                          <span class="form-label-sm">
                                             <i class="bi bi-paperclip"></i> Acuerdo de adopción
                                           </span>';
                                   if ($arch_existente) {
@@ -1596,7 +1590,7 @@
                           // Observaciones
                           $obs_val = ($count > 0) ? htmlspecialchars($recursos["observaciones"]) : '';
                           echo '<div class="col-sm-5">
-                                  <span class="ad-footer-form form-label-sm">
+                                  <span class="form-label-sm">
                                     <i class="bi bi-chat-left-text"></i> Observaciones
                                   </span>
                                   <textarea class="form-control" name="observaciones" rows="4"
@@ -1608,7 +1602,7 @@
                           echo '</div>'; // .ad-footer-form
                           echo '</form>';
                        ?>
-	
+  
 </div>
 <script>var librosYaEnAdop = <?= json_encode($ids_exist_adop) ?>;</script>
 <script src="../vendors/scripts/core.js"></script>
@@ -1648,7 +1642,7 @@
           ],
         });
     });
-	//libros definicion
+  //libros definicion
 
     $('#gradod').on('change',function(){
         var valor = $(this).val();
@@ -1861,7 +1855,7 @@
         }else{
           
           for (i=0;i<document.f2.elements.length;i++)
-          	if(document.f2.elements[i].type == "checkbox")
+            if(document.f2.elements[i].type == "checkbox")
                 document.f2.elements[i].checked=0 
 
         }
@@ -1900,9 +1894,9 @@
                                         
     $('#total_vp_d').text(formatNumber.new(total_vp_d));
 
-    	total_uni_vr_d=0;
+      total_uni_vr_d=0;
 
-      	$('.uni_vr_d').each(function(){
+        $('.uni_vr_d').each(function(){
 
         total_uni_vr_d+=parseFloat($(this).val()) || 0;
 
@@ -1913,7 +1907,7 @@
 
     $('#total_vr').text(formatNumber.new(total_uni_vr_d));
 
-   	var cumplimiento=(total_uni_vr_d / total_vp_d) * 100;
+    var cumplimiento=(total_uni_vr_d / total_vp_d) * 100;
 
     // ── Actualizar tarjetas de resumen ────────────────────────
     $('#ad-card-vp').text($('#total_vp_d').text() || '—');
