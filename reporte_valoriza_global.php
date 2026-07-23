@@ -1,4 +1,7 @@
-<?php require_once("php/aut.php"); ?>
+<?php
+require_once("php/aut.php");
+$periodo_preseleccionado = intval($_GET['periodo'] ?? 0);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -36,7 +39,7 @@
         <div class="sm-section-body">
           <form action="php/valoriza_global_excel.php" method="POST">
             <div class="row">
-              <?php if ($_SESSION['tipo'] == 1 || $_SESSION['tipo'] == 2 || $_SESSION['tipo'] == 7 || $_SESSION['tipo'] == 9): ?>
+              <?php if ($_SESSION['tipo'] == 1 || $_SESSION['tipo'] == 2 || $_SESSION['tipo'] == 7): ?>
               <div class="col-md-5 col-12 mb-3">
                 <label class="control-label">Usuario <small style="color:red;">*</small></label>
                 <select name="promotor" id="promo" class="form-control custom-select2" required>
@@ -57,8 +60,10 @@
                   <?php
                     $sql = "SELECT id, periodo FROM periodos ORDER BY id DESC";
                     $req = $bdd->prepare($sql); $req->execute();
-                    foreach ($req->fetchAll() as $p)
-                      echo '<option value="'.$p['id'].'">'.$p['periodo'].'</option>';
+                    foreach ($req->fetchAll() as $p) {
+                      $sel = ($periodo_preseleccionado > 0 && $p['id'] == $periodo_preseleccionado) ? ' selected' : '';
+                      echo '<option value="'.$p['id'].'"'.$sel.'>'.$p['periodo'].'</option>';
+                    }
                   ?>
                 </select>
               </div>
