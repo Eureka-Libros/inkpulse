@@ -1747,24 +1747,32 @@
                           echo '</select></div>';
                           echo '<script>
                             $(function () {
-                              $("#cliente_adop").select2({
-                                placeholder: "Seleccionar cliente...",
-                                width: "100%",
-                                dropdownParent: $("#adopciones"),
-                                minimumInputLength: 2,
-                                ajax: {
-                                  url: "ajax/buscar_clientes.php",
-                                  dataType: "json",
-                                  delay: 300,
-                                  data: function (params) { return { q: params.term }; },
-                                  processResults: function (data) { return { results: data }; }
-                                },
-                                language: {
-                                  inputTooShort: function () { return "Escribe al menos 2 letras para buscar..."; },
-                                  noResults: function () { return "Sin resultados"; },
-                                  searching: function () { return "Buscando..."; }
-                                }
-                              });
+                              $("#cliente_adop").select2({ 
+                                placeholder: "Seleccionar cliente...", 
+                                width: "100%", 
+                                dropdownParent: $("#adopciones"), 
+                                minimumInputLength: 2, 
+                                ajax: { 
+                                    url: "ajax/buscar_clientes.php", 
+                                    dataType: "json", 
+                                    delay: 300, 
+                                    data: function (params) { 
+                                        return { 
+                                            q: params.term, // Término de búsqueda actual
+                                            periodo: '.$_GET["periodo"].', // <--- Tu nuevo parámetro estático
+                                            
+                                        }; 
+                                    }, 
+                                    processResults: function (data) { 
+                                        return { results: data }; 
+                                    } 
+                                }, 
+                                language: { 
+                                    inputTooShort: function () { return "Escribe al menos 2 letras para buscar..."; }, 
+                                    noResults: function () { return "Sin resultados"; }, 
+                                    searching: function () { return "Buscando..."; } 
+                                } 
+                            });
                             });
                           </script>';
 
