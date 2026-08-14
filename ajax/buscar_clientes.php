@@ -22,6 +22,7 @@ if ($q !== '') {
                 cliente NOT REGEXP '^AA[0-9]{2}[[:space:]]*-'
                 OR cliente REGEXP CONCAT('^AA', :anio, '[[:space:]]*-')
               )
+          AND LOWER(cliente) NOT LIKE '%muestra%'
         ORDER BY id DESC
         LIMIT 50
     ";
