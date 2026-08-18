@@ -134,7 +134,7 @@
                 <select class="form-control custom-select2" name="cliente" id="cliente" style="width:100%;" required>
                   <option value="">Seleccionar</option>
                   <?php
-                    $sql = "SELECT * FROM clientes";
+                    $sql = "SELECT * FROM clientes ORDER BY id DESC";
                     $req = $bdd->prepare($sql); $req->execute();
                     foreach ($req->fetchAll() as $c)
                       echo '<option value="'.$c["id"].'">'.$c["cliente"].'</option>';
