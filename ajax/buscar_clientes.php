@@ -8,7 +8,7 @@ $q = trim($_GET['q'] ?? '');
 $resultados = [];
 
 if ($q !== '') {
-    $sql = "SELECT id, cliente FROM clientes WHERE cliente LIKE :q ORDER BY cliente ASC LIMIT 50";
+    $sql = "SELECT id, cliente FROM clientes WHERE cliente LIKE :q ORDER BY id DESC LIMIT 50";
     $req = $bdd->prepare($sql);
     $req->execute([':q' => '%'.$q.'%']);
     foreach ($req->fetchAll() as $row) {
