@@ -476,7 +476,7 @@
         if ($tot_legaliza <= 0 && in_array((int)$solicitud['idestado'], [2, 4])) {
           $tot_legaliza = (float)array_sum($t_legaliza);
         }
-        $saldo_pendiente = max($tot_presup - $tot_legaliza, 0);
+        //$saldo_pendiente = max($tot_presup - $tot_legaliza, 0);
         ?>
       </tbody>
       <tfoot>
@@ -503,10 +503,10 @@
       <p class="vs-info-label">Total entregado</p>
       <p class="vs-info-val">$ <?= number_format($tot_valor_e, 0, ',', '.') ?></p>
     </div>
-    <div class="vs-info-card" style="border-left-color:<?= $saldo_pendiente > 0 ? '#f59e0b' : '#16a34a' ?>">
+    <!--<div class="vs-info-card" style="border-left-color:<?= $saldo_pendiente > 0 ? '#f59e0b' : '#16a34a' ?>">
       <p class="vs-info-label">Saldo por entregar</p>
       <p class="vs-info-val" style="color:<?= $saldo_pendiente > 0 ? '#b45309' : '#16a34a' ?>">$ <?= number_format($saldo_pendiente, 0, ',', '.') ?></p>
-    </div>
+    </div>-->
     <div class="vs-info-card" style="border-left-color:#16a34a">
       <p class="vs-info-label">Total legalizado</p>
       <p class="vs-info-val">$ <?= number_format($tot_legaliza, 0, ',', '.') ?></p>
