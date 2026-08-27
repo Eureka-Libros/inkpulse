@@ -646,7 +646,7 @@
   <?php endif; ?>
 
   <!-- Archivo de legalización -->
-  <?php if ($solicitud["idestado"] == 4 && $solicitud["archivo"] == ""): ?>
+  <?php if (($solicitud["idestado"] == 2 || $solicitud["idestado"] == 4) && $solicitud["archivo"] == ""): ?>
   <div class="vs-archivo">
     <form action="php/archivo_solicitud.php" method="POST" enctype="multipart/form-data">
       <label class="control-label"><i class="bi bi-paperclip" style="color:#6366f1;margin-right:4px"></i> Archivo de legalización</label>
