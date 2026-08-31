@@ -636,7 +636,16 @@
             $req2 = $bdd->prepare($sql2); $req2->execute();
             $tot2 = $req2->fetch();
 
-            $num = ($sol['id'] < 221) ? $sol['id'] : $sol['conse'];
+            $sql_periodo = "SELECT periodo, SUBSTRING(periodo, 3, 2) AS anio_corto
+                FROM periodos
+                WHERE id = '".$_GET['periodo']."'";
+
+            $req_periodo = $bdd->prepare($sql_periodo);
+            $req_periodo->execute();
+            $gp_periodo = $req_periodo->fetch();
+
+            $soli_conse=$gp_periodo["anio_corto"]." - ".$sol["conse"];
+
 
             // Color del badge según estado
             $estado_lower = strtolower($sol['estado']);
@@ -673,7 +682,7 @@
           $es_legal = ($legal_state !== 'none');
         ?>
         <tr data-legal="<?= $es_legal ? '1' : '0' ?>">
-          <td><a href="vista_solicitud.php?id=<?= $sol['id'] ?>" class="at-link vista_soli"><?= htmlspecialchars($num) ?></a></td>
+          <td><a href="vista_solicitud.php?id=<?= $sol['id'] ?>" class="at-link vista_soli"><?= htmlspecialchars($soli_conse) ?></a></td>
           <td><?= htmlspecialchars($sol['fecha']) ?></td>
           <td><?= htmlspecialchars($sol['solicitante'].' ('.$sol['cargo'].')') ?></td>
           <td><?= htmlspecialchars($sol['fecha_entrega']) ?></td>
