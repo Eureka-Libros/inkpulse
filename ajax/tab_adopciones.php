@@ -1777,7 +1777,12 @@
                             });
                           </script>';
 
-                           echo '<div class="col-sm-4">
+                           
+
+                          // Documento(s) de adopción (máx. 3) y tipo de adopción solo para tipos 1, 3, 10
+                          if (in_array($_SESSION['tipo'], [1, 2, 3, 10])) {
+
+                            echo '<div class="col-sm-4">
                                   <span class="form-label-sm">
                                     <i class="bi bi-person-vcard"></i> Tipo de adopción <span style="color:#dc2626">*</span>
                                   </span>
@@ -1794,13 +1799,10 @@
                                       }
 
                               
-                          echo '</select></div>
+                            echo '</select></div>
 
-                          </div>
-                          <br><div class="row">';
-
-                          // Documento(s) de adopción (máx. 3, solo para tipos 1, 3, 10)
-                          if (in_array($_SESSION['tipo'], [1, 2, 3, 10])) {
+                            </div>
+                            <br><div class="row">';
                               $archivos_existentes = [];
                               if ($count > 0) {
                                   foreach (['archivo', 'archivo2', 'archivo3'] as $campo_arch) {
