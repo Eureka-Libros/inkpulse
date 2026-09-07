@@ -3,7 +3,7 @@ require_once("php/aut.php");
 require_once("conexion/bdd.php");
 
 $tp = intval($_GET['tp'] ?? 2);
-$show_stock = ($tp == 2 || $tp == 3) && (($_SESSION['tipo'] ?? null) == 1);
+$show_stock = ($tp == 2 || $tp == 3) && (($_SESSION['tipo'] ?? null) == 1 || $_SESSION['id']==25);
 
 $status_cfg = [
   2 => ['label'=>'Pendientes',  'badge'=>'lm-badge-yellow', 'icon'=>'bi-hourglass-split'],
