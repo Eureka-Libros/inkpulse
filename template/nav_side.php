@@ -362,6 +362,12 @@ $periodos_active     = $current_page === 'periodos.php';
 											<a href="lista_muestreo.php?tp=3" id="">Aprobados</a>
 										</li>
 										<li>
+											<a href="lista_muestreo.php?tp=6" id="">Procesando</a>
+										</li>
+										<li>
+											<a href="lista_muestreo.php?tp=7" id="">En facturación</a>
+										</li>
+										<li>
 											<a href="lista_muestreo.php?tp=4" id="">Despachados</a>
 										</li>
 										<li>
