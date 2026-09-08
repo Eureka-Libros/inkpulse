@@ -486,6 +486,8 @@ $periodos_active     = $current_page === 'periodos.php';
 										<li>
 											<a href="lista_pedidos_sa.php?tp=2" >Pendientes</a>
 											<a href="lista_pedidos_sa.php?tp=3" >Aprobados</a>
+											<a href="lista_pedidos_sa.php?tp=6" >Procesando</a>
+											<a href="lista_pedidos_sa.php?tp=7" >En facturación</a>
 											<a href="lista_pedidos_sa.php?tp=4" >Entregados</a>
 											<a href="lista_pedidos_sa.php?tp=5" >Anulados</a>
 										</li>
