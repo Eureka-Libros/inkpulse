@@ -243,6 +243,8 @@
               </div>
               <div class="sm-section-body">
                 <div class="row">
+
+                  <?php if ($_SESSION['tipo']!=6): ?>
                   <div class="form-group col-md-5 col-sm-6 mb-0">
                     <label for="cole" class="control-label">Tipo de muestras<small style="color:red;">*</small></label>
                     <select name="tipo" id="tipo" class="form-control custom-select2" required>
@@ -252,6 +254,12 @@
                       
                     </select>
                   </div>
+
+                  <?php else: ?>
+
+                    <input type="hidden" name="tipo" id="tipo" value="1">
+
+                  <?php endif; ?>
 
                   <div class="form-group col-md-5 col-sm-6 ocultar_oficina mb-0">
                     <label for="cole" class="control-label">Colegio <small style="color:red;">*</small></label>

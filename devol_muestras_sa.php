@@ -156,6 +156,8 @@
               </div>
              
               <?php elseif ($_GET['tp'] == 1): ?>
+
+              <?php if ($_SESSION['tipo']!=6): ?>
               <div class="form-group col-md-5 col-sm-6 mb-0">
                 <label for="cole" class="control-label">Tipo de muestras<small style="color:red;">*</small></label>
                 <select name="tipo" id="tipo" class="form-control custom-select2" required>
@@ -165,6 +167,11 @@
                       
                 </select>
               </div>
+              <?php else: ?>
+
+                <input type="hidden" name="tipo" id="tipo" value="1">
+
+              <?php endif; ?>
             <?php endif; ?>
               <?php if ($_SESSION["tipo"] == 1 || $_SESSION["tipo"] == 2): ?>
               <div class="col-md-5 col-12 mb-3">
