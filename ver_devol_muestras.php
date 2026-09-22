@@ -10,12 +10,12 @@ if ($_SESSION["tipo"] == 1 || $_SESSION["tipo"] == 2) {
           LEFT JOIN colegios c ON c.id=p.id_colegio
           WHERE p.tipo='1'";
 } else {
-  $sql = "SELECT p.id, p.tipo, p.tipo_muestras, u.nombres, u.apellidos, p.fecha, e.estado, c.cliente
+  $sql = "SELECT p.id, p.tipo, p.tipo_muestras, u.nombres, u.apellidos, p.fecha, e.estado
           FROM devoluciones p
           JOIN usuarios u ON u.id=p.id_usuario
           JOIN estados_pedidos e ON e.id=p.estado
           LEFT JOIN colegios c ON c.id=p.id_colegio
-          WHERE p.tipo='1' AND id_usuario='".$_SESSION['id']."'";
+          WHERE p.tipo='1' AND p.id_usuario='".$_SESSION['id']."'";
 }
 
 $req = $bdd->prepare($sql);
