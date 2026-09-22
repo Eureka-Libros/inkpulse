@@ -1823,7 +1823,8 @@
                                           return '<a href="'.htmlspecialchars($a).'" target="_blank" rel="noopener">'.htmlspecialchars(basename($a)).'</a>';
                                       }, $archivos_existentes))
                                       . '</p>';
-                                  $arch_req_badge = $arch_existente ? '' : ' <span style="color:#dc2626">*</span>';
+                                  //$arch_req_badge = $arch_existente ? '' : ' <span style="color:#dc2626">*</span>';
+                                  $arch_req_badge = $arch_existente ? '' : ' ';
 
                                   echo '<div class="col-sm-4">
                                           <span class="form-label-sm">
@@ -2260,7 +2261,7 @@
     var requiereAcuerdo = <?= ($gp_periodo["periodo"] >= 2027) ? 'true' : 'false'; ?>;
 
     // ── Validar archivo antes de guardar adopciones ──────────────
-    $('#form_definicion').on('submit', function(e) {
+    /*$('#form_definicion').on('submit', function(e) {
 
         if (!requiereAcuerdo) {
             return true;
@@ -2278,7 +2279,7 @@
             }, 2500);
             return false;
         }
-    });
+    });*/
 
 </script>
 
