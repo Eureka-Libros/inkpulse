@@ -549,9 +549,9 @@ $ph_cant_aprob = $col_cant_aprob ? '' : ' d-print-none';
             </tfoot>
           </table>
           <!-- lib_p[] hidden inputs fuera del table -->
-          <div class="d-none">
+          <div class="">
             <?php foreach ($libros as $lb): ?>
-            <input type="hidden" name="lpid[]" value="<?= $lb['lpid'] ?>">
+           <input type="hidden" name="lpid[]" value="<?= $lb['lpid'] ?>" id="lid_form<?= $lb['lpid'] ?>">
             <input type="hidden" name="lib_p[]" id="l<?= $lb['lpid'] ?>">
             <?php endforeach; ?>
           </div>
@@ -696,6 +696,8 @@ $('#form_pedido').on('submit', function () {
 });
 $(document).on('click', '.elim-libro', function () {
   $('#' + $(this).data('lpid')).remove();
+  var n_id = $(this).data('lpid');
+  $("#lid_form"+n_id).remove();
 });
 
 $('#imprimir').on('click', function () { window.print(); });
