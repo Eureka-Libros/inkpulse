@@ -425,7 +425,7 @@ $periodos_active     = $current_page === 'periodos.php';
 											<a href="lista_pedidos.php?tp=2" >Pendientes</a>
 											<a href="lista_pedidos.php?tp=3" >Aprobados</a>
 											<a href="lista_pedidos.php?tp=6" >Procesando</a>
-											<a href="lista_pedidos.php?tp=7" >En facturacioón</a>
+											<a href="lista_pedidos.php?tp=7" >En facturación</a>
 											<a href="lista_pedidos.php?tp=8" >En despacho</a>
 											<a href="lista_pedidos.php?tp=4" >Entregados</a>
 											<a href="agrupar_pedidos.php" >Agrupar pedidos</a>
