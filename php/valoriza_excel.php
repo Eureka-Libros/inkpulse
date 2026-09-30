@@ -28,6 +28,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 require_once("../php/aut.php");
 include("../conexion/bdd.php");
+require_once("../includes/excel_formato.php");
 ini_set('memory_limit', '512M');
 $objSpreadsheet = new Spreadsheet();
 $objSpreadsheet->getProperties()->setCreator("Ing. Alejandro Rangel");
@@ -72,20 +73,6 @@ $estilo_borde = [
     
 ];
 
-//poner imagen
-$drawing = new Drawing();
-$drawing->setName('test_img');
-$drawing->setDescription('test_img');
-$drawing->setPath('../vendors/images/logo_eureka.png'); // Ruta relativa o absoluta a la imagen
-$drawing->setHeight(100); // Puedes ajustar el tamaño si deseas
-$drawing->setCoordinates('A1'); // Posición en la hoja
-$drawing->setWorksheet($objSpreadsheet->getActiveSheet());
-
-$objSpreadsheet->getActiveSheet()->mergeCells('C2:D2');
-$objSpreadsheet->getActiveSheet()->getStyle('C2')->applyFromArray($estilo_negrita);
-$objSpreadsheet->getActiveSheet()->getStyle('C2')->applyFromArray($estilo_centrar);
-$objSpreadsheet->getActiveSheet()->SetCellValue("C2", "REPORTE DE VALORIZACIÓN");
-
 $sql_periodo="SELECT periodo, id_calendario FROM periodos WHERE id='".$_POST["periodo"]."'";
 
 $req_periodo = $bdd->prepare($sql_periodo);
@@ -99,11 +86,7 @@ $fecha=date("Y-m-d");
 // que ya usan php/dashboard_adopciones_stats.php y php/valoriza_global_excel.php.
 $calendario_periodo_v = intval($gp_periodo["id_calendario"]);
 
-$objSpreadsheet->getActiveSheet()->getStyle('C4')->applyFromArray($estilo_negrita);
-$objSpreadsheet->getActiveSheet()->getStyle('D4')->applyFromArray($estilo_negrita);
-
-$objSpreadsheet->getActiveSheet()->SetCellValue("C4", "Fecha");
-$objSpreadsheet->getActiveSheet()->SetCellValue("D4", "$fecha");
+excel_encabezado($objSpreadsheet->getActiveSheet(), $bdd, "REPORTE DE VALORIZACIÓN", "Periodo: $gp_periodo[periodo]");
 
 $objSpreadsheet->getActiveSheet()->SetCellValue("A6", "Empresa");
 $objSpreadsheet->getActiveSheet()->SetCellValue("B6", "Asesor");
@@ -436,8 +419,8 @@ foreach ($colegios as $colegio) {
         $objSpreadsheet->getActiveSheet()->SetCellValue("E$conta", "$sz_nombre_v");
         $objSpreadsheet->getActiveSheet()->SetCellValue("B$conta", "$colegio[responsable]");
     }
-    
-    $objSpreadsheet->getActiveSheet()->SetCellValue("D$conta", "$colegio[dane]");
+	
+	$objSpreadsheet->getActiveSheet()->SetCellValue("D$conta", "$colegio[dane]");
     $objSpreadsheet->getActiveSheet()->SetCellValue("C$conta", "$colegio[colegio]");
 
     $dep_str = $dep_map_v[$colegio['departamento']] ?? '';
@@ -449,16 +432,16 @@ foreach ($colegios as $colegio) {
     $objSpreadsheet->getActiveSheet()->SetCellValue("J$conta", $n_grado_str);
    
     
-    $objSpreadsheet->getActiveSheet()->SetCellValue("K$conta", "$colegio[libro]");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("K$conta", "$colegio[libro]");
     if ($colegio["pre_definido"] ==1) {
-        $objSpreadsheet->getActiveSheet()->SetCellValue("L$conta", "$alumnos_tasa");
+    	$objSpreadsheet->getActiveSheet()->SetCellValue("L$conta", "$alumnos_tasa");
         $objSpreadsheet->getActiveSheet()->SetCellValue("M$conta", "$descuento_p");
-        $objSpreadsheet->getActiveSheet()->SetCellValue("N$conta", "$venta_ppto");
+    	$objSpreadsheet->getActiveSheet()->SetCellValue("N$conta", "$venta_ppto");
     }
     $objSpreadsheet->getActiveSheet()->SetCellValue("O$conta", $probabilidad_map[$colegio["probabilidad"]] ?? '');
-    $objSpreadsheet->getActiveSheet()->SetCellValue("P$conta", "$alumnos_tasa_d");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("P$conta", "$alumnos_tasa_d");
     $objSpreadsheet->getActiveSheet()->SetCellValue("Q$conta", "$descuento_d");
-    $objSpreadsheet->getActiveSheet()->SetCellValue("R$conta", "$venta_ppto_d");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("R$conta", "$venta_ppto_d");
     $objSpreadsheet->getActiveSheet()->SetCellValue("S$conta", "$colegio[uni_vr]");
     if ($colegio["definido"] !=0) {
 
@@ -479,10 +462,10 @@ foreach ($colegios as $colegio) {
 
     $objSpreadsheet->getActiveSheet()->SetCellValue("X$conta", !empty($status_str) ? $status_str : "Por definir");
 
-    $conta++;
+	$conta++;
 
 
-}   
+}	
 
 
 $objSpreadsheet->getActiveSheet()->getStyle("N7:N$conta")
@@ -508,7 +491,7 @@ $objSpreadsheet->getActiveSheet()->getStyle("N7:N$conta")
           ->setFormatCode(
           '_("$"* #,##0_);_("$"* \(#,##0\);_("$"* "-"??_);_(@_)'
         );
-    
+	
 
 
 foreach (range('A', 'Z') as $columnID) {

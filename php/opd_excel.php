@@ -27,6 +27,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 require_once("../php/aut.php");
 include("../conexion/bdd.php");
+require_once("../includes/excel_formato.php");
 $objSpreadsheet = new Spreadsheet();
 $objSpreadsheet->getProperties()->setCreator("Ing. Alejandro Rangel");
 $objSpreadsheet->getProperties()->setTitle("Reporte - Ordenes de Producción");
@@ -69,31 +70,7 @@ $estilo_borde = [
     
 ];
 
-//poner imagen
-$drawing = new Drawing();
-$drawing->setName('test_img');
-$drawing->setDescription('test_img');
-$drawing->setPath('../vendors/images/logo_eureka.png'); // Ruta relativa o absoluta a la imagen
-$drawing->setHeight(100); // Puedes ajustar el tamaño si deseas
-$drawing->setCoordinates('A1'); // Posición en la hoja
-$drawing->setWorksheet($objSpreadsheet->getActiveSheet());
-
-$objSpreadsheet->getActiveSheet()->mergeCells('A1:B4');
-
-
-$objSpreadsheet->getActiveSheet()->mergeCells('D2:F2');
-$objSpreadsheet->getActiveSheet()->getStyle('D2')->applyFromArray($estilo_negrita);
-$objSpreadsheet->getActiveSheet()->getStyle('D2')->applyFromArray($estilo_centrar);
-$objSpreadsheet->getActiveSheet()->SetCellValue("D2", "Reporte - Ordenes de Producción");
-
-
-$fecha=date("Y-m-d");
-
-$objSpreadsheet->getActiveSheet()->getStyle('C4')->applyFromArray($estilo_negrita);
-$objSpreadsheet->getActiveSheet()->getStyle('D4')->applyFromArray($estilo_negrita);
-
-$objSpreadsheet->getActiveSheet()->SetCellValue("C4", "Fecha reporte");
-$objSpreadsheet->getActiveSheet()->SetCellValue("D4", "$fecha");
+excel_encabezado($objSpreadsheet->getActiveSheet(), $bdd, "Reporte - Ordenes de Producción", "Rango: $_POST[desde] - $_POST[hasta]");
 
 $objSpreadsheet->getActiveSheet()->SetCellValue("A6", "Consecutivo");
 $objSpreadsheet->getActiveSheet()->SetCellValue("B6", "Fecha solicitud");
@@ -118,14 +95,14 @@ $objSpreadsheet->getActiveSheet()->SetCellValue("T6", "Total clicks");
 $objSpreadsheet->getActiveSheet()->SetCellValue("U6", "Valor");
 
 $objSpreadsheet->getActiveSheet()->getStyle("A1:U1")->getFont()->getColor()->applyFromArray(
-    array(
-    'rgb' => '#251919'
-    )
+	array(
+	'rgb' => '#251919'
+	)
 );
 $objSpreadsheet->getActiveSheet()->getStyle("A6:U6")->getFont()->getColor()->applyFromArray(
-    array(
-    'rgb' => '#251919'
-    )
+	array(
+	'rgb' => '#251919'
+	)
 );
 
 $objSpreadsheet->getActiveSheet()->getStyle('A6:U6')->applyFromArray([
@@ -174,16 +151,16 @@ foreach ($opds as $opd) {
     $ent2 = $ents[1] ?? null;
     $ent3 = $ents[2] ?? null;
 
-    $opdid=$opd["año"]." - ".$opd["id"];
+	$opdid=$opd["año"]." - ".$opd["id"];
     $objSpreadsheet->getActiveSheet()->SetCellValue("A$conta", "$opdid");
-    $objSpreadsheet->getActiveSheet()->SetCellValue("B$conta", "$opd[fecha]");
-    $objSpreadsheet->getActiveSheet()->SetCellValue("C$conta", "$opd[usuario]");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("B$conta", "$opd[fecha]");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("C$conta", "$opd[usuario]");
     $objSpreadsheet->getActiveSheet()->SetCellValue("D$conta", $opd["estado"] == 0 ? "Pendiente" : "Cumplida");
-    $objSpreadsheet->getActiveSheet()->SetCellValue("E$conta", "$opd[solicitante]");
-    $objSpreadsheet->getActiveSheet()->SetCellValue("F$conta", "$opd[cliente]");
-    $objSpreadsheet->getActiveSheet()->SetCellValue("G$conta", "$opd[fecha_ent_s]");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("E$conta", "$opd[solicitante]");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("F$conta", "$opd[cliente]");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("G$conta", "$opd[fecha_ent_s]");
     $objSpreadsheet->getActiveSheet()->SetCellValue("H$conta", "$opd[observaciones]");
-    $objSpreadsheet->getActiveSheet()->SetCellValue("I$conta", "$opd[libro]");
+	$objSpreadsheet->getActiveSheet()->SetCellValue("I$conta", "$opd[libro]");
     $objSpreadsheet->getActiveSheet()->SetCellValue("J$conta", "$opd[cantidad]");
 
     if ($ent1) {
@@ -211,7 +188,7 @@ foreach ($opds as $opd) {
     $objSpreadsheet->getActiveSheet()->SetCellValue("T$conta", $total_clicks);
     $objSpreadsheet->getActiveSheet()->SetCellValue("U$conta", $total_clicks * $opd["valor_click"]);
 
-    $conta++;
+	$conta++;
 }
 
 $objSpreadsheet->getActiveSheet()->getStyle("U7:U$conta")
@@ -220,7 +197,7 @@ $objSpreadsheet->getActiveSheet()->getStyle("U7:U$conta")
     '_("$"* #,##0_);_("$"* \(#,##0\);_("$"* "-"??_);_(@_)'
 );
 
-    
+	
 
 
 foreach (range('A', 'Z') as $columnID) {
