@@ -735,7 +735,7 @@ if (isset($n_op['estado']) && $n_op['estado'] == 2) {
   <?php foreach ($libros as $libro): ?>
   $('#c<?= $libro["lpid"] ?>').on('keyup', function(){
     var cant = $(this).val();
-    $('#l<?= $libro["lpid"] ?>').val(cant + '/' + <?= $libro["lpid"] ?>);
+    $('#l<?= $libro["lpid"] ?>').val(cant + '/' + '<?= $libro["lpid"] ?>');
   });
   <?php if ($is_admin): ?>
   (function(lpid, nombre){
@@ -747,7 +747,7 @@ if (isset($n_op['estado']) && $n_op['estado'] == 2) {
         btnOk: 'Sí, eliminar'
       }, function(){ $(document.getElementById(lpid)).remove(); });
     });
-  })(<?= $libro["lpid"] ?>, <?= json_encode($libro["libro"]) ?>);
+  })('<?= $libro["lpid"] ?>', <?= json_encode($libro["libro"]) ?: '{}' ?>);
   <?php endif; ?>
   <?php endforeach; ?>
 </script>
