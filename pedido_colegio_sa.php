@@ -395,15 +395,6 @@ $ph_cant_aprob = $col_cant_aprob ? '' : ' d-print-none';
             <p class="mc-card-val"><?= htmlspecialchars($pedido["ptipo"] ?? '—') ?></p>
           </div>
         </div>
-        <?php if ($pedido["ptipo"]=="Muestras") { ?>
-          <div class="mc-card">
-            <div class="mc-card-icon teal"><i class="bi bi-journal"></i></div>
-            <div>
-              <p class="mc-card-label">Tipo de muestras</p>
-              <p class="mc-card-val"><?= htmlspecialchars($pedido["tipo_muestras"] ?? '—') ?></p>
-            </div>
-          </div>
-        <?php } ?>
         <div class="mc-card">
           <div class="mc-card-icon orange"><i class="bi bi-calendar3"></i></div>
           <div>
