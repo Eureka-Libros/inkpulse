@@ -250,6 +250,16 @@
                         >Población</a
                       >
                     </li>
+                    <li class="nav-item pobla">
+                      <a
+                        class="nav-link"
+                        data-toggle="tab"
+                        href="#mercado"
+                        role="tab"
+                        aria-selected="false" data-url="ajax/tab_mercado.php"
+                        >Mercado editorial</a
+                      >
+                    </li>
                     <li class="nav-item presupuesto">
                       <a
                         class="nav-link"
@@ -688,6 +698,7 @@
                     </div>
                     <div class="tab-pane" id="info_contac" role="tabpanel"></div>
                     <div class="tab-pane" id="poblacion" role="tabpanel"></div>
+                    <div class="tab-pane" id="mercado" role="tabpanel"></div>
 
                     <div class="tab-pane" id="presupuesto" role="tabpanel"></div>
 
@@ -913,7 +924,7 @@
           var baseUrl = $(e.target).data("url");
           var codigo = <?php echo json_encode($colegio["codigo"]); ?>;
           // Agrega parámetros dinámicos
-          if (target !="#presupuesto" && target !="#adopciones") {
+          if (target !="#presupuesto" && target !="#adopciones" && target !="#mercado") {
             var urlConParametros = baseUrl + '?colegio=' + <?php echo $colegio["id"] ?> + '&periodo='+ <?php echo $_GET["periodo"] ?>+ '&codigo='+ encodeURIComponent(codigo)+ '&id_calendario='+ <?php echo $colegio['id_calendario'] ?>;
           }else{
             var responsable = <?php echo json_encode($colegio["responsable"]); ?>;
