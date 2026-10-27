@@ -304,10 +304,13 @@
             // de donde salieron. Las del formulario anterior no tienen estas columnas llenas.
             $origen_legaliz = null;
             try {
-              $req_ol = $bdd->prepare("SELECT id_muestreo, ops_muestreo, documentos_wo, cierre FROM muestreos_e WHERE id = ? AND id_muestreo IS NOT NULL");
+              $req_ol = $bdd->prepare("SELECT id_muestreo, ids_muestreos, ops_muestreo, documentos_wo, cierre FROM muestreos_e WHERE id = ? AND id_muestreo IS NOT NULL");
               $req_ol->execute([intval($_GET["id_muestras_e"])]);
               $origen_legaliz = $req_ol->fetch(PDO::FETCH_ASSOC) ?: null;
             } catch (Exception $e) { /* columnas aún no creadas */ }
+            // Una legalización puede ser de varios pedidos (ids_muestreos, desde 2026-10-27).
+            $pedidos_legaliz = $origen_legaliz ? array_filter(array_map('intval', explode(',', (string)$origen_legaliz['ids_muestreos']))) : [];
+            if ($origen_legaliz && !$pedidos_legaliz) $pedidos_legaliz = [(int)$origen_legaliz['id_muestreo']];
           }
 
           if ($pedido["tipo"] == 3) {
@@ -341,8 +344,8 @@
         <?php if (!empty($origen_legaliz)): ?>
         <div class="mc-op-badge">
           <i class="bi bi-patch-check"></i>
-          Legalizado del pedido de muestras
-          <a href="muestreo_colegio.php?id_muestreo=<?= (int)$origen_legaliz['id_muestreo'] ?>" target="_blank">#<?= (int)$origen_legaliz['id_muestreo'] ?></a>
+          Legalizado <?= count($pedidos_legaliz) > 1 ? 'de los pedidos de muestras' : 'del pedido de muestras' ?>
+          <?php foreach (array_values($pedidos_legaliz) as $i => $id_pl): ?><?= $i ? ', ' : '' ?><a href="muestreo_colegio.php?id_muestreo=<?= $id_pl ?>" target="_blank">#<?= $id_pl ?></a><?php endforeach; ?>
           <?php if (!empty($origen_legaliz['ops_muestreo'])): ?> · OP <?= htmlspecialchars($origen_legaliz['ops_muestreo']) ?><?php endif; ?>
           <?php if (!empty($origen_legaliz['documentos_wo'])): ?> · WO <?= htmlspecialchars($origen_legaliz['documentos_wo']) ?><?php endif; ?>
           <?php if (!empty($origen_legaliz['cierre'])): ?> · Legalización <strong><?= $origen_legaliz['cierre'] === 'completa' ? 'completa' : 'parcial' ?></strong><?php endif; ?>
@@ -456,7 +459,18 @@
                 <th>Ubicación</th>
                 <th>Materia</th>
                 <th>Grado</th>
-                <?php if (isset($_GET["id_pedido"])): ?>
+                <?php
+                  // Si al aprobar cambiaron la cantidad de algún libro, se ven lo solicitado y lo aprobado lado a lado
+                  // (cantidad_aprob < 1 = no la cambiaron: se aprueba lo solicitado).
+                  $hay_cant_aprob = false;
+                  if (isset($_GET["id_pedido"])) {
+                    foreach ($libros as $lb_a) { if (intval($lb_a["cantidad_aprob"]) >= 1) { $hay_cant_aprob = true; break; } }
+                  }
+                ?>
+                <?php if ($hay_cant_aprob): ?>
+                  <th>Cantidad solicitada</th>
+                  <th>Cantidad aprobada</th>
+                <?php elseif (isset($_GET["id_pedido"])): ?>
                   <th>Cantidad</th>
                 <?php else: ?>
                   <th>Cantidad entregada</th>
@@ -466,6 +480,7 @@
             <tbody>
               <?php
                 $i = 1;
+                $total_cantidad_aprob = [];
                 foreach ($libros as $libro) {
                   $su = $bdd->prepare(
                     "SELECT l.id_tipo, l.lugar, u.piso, u.ubicacion, lu.posicion
@@ -496,14 +511,18 @@
                   echo '<td>'.htmlspecialchars($ubi).'</td>';
                   echo '<td>'.htmlspecialchars($libro["materia"]).'</td>';
                   echo '<td>'.htmlspecialchars($libro["grado"]).'</td>';
-                  if (isset($_GET["id_pedido"])) {
-                    if ($libro["cantidad_aprob"] < 1) {
-                      echo '<td style="text-align:center">'.$libro["cantidad"].'</td>';
-                      $total_cantidad[]       = $libro["cantidad"];
-                    }else{
-                      echo '<td style="text-align:center">'.$libro["cantidad_aprob"].'</td>';
-                      $total_cantidad[]       = $libro["cantidad"];
-                    }        
+                  if ($hay_cant_aprob) {
+                    $cambiada = intval($libro["cantidad_aprob"]) >= 1;
+                    $aprobada = $cambiada ? intval($libro["cantidad_aprob"]) : intval($libro["cantidad"]);
+                    $resaltar = $cambiada && $aprobada != intval($libro["cantidad"]);
+                    echo '<td style="text-align:center">'.intval($libro["cantidad"]).'</td>';
+                    echo '<td style="text-align:center'.($resaltar ? ';font-weight:700;color:#b45309' : '').'"'
+                       . ($cambiada ? '' : ' title="Sin cambio: se aprobó lo solicitado"').'>'.$aprobada.'</td>';
+                    $total_cantidad[]       = $libro["cantidad"];
+                    $total_cantidad_aprob[] = $aprobada;
+                  }elseif (isset($_GET["id_pedido"])) {
+                    echo '<td style="text-align:center">'.$libro["cantidad"].'</td>';
+                    $total_cantidad[]       = $libro["cantidad"];
                   }else{
                     echo '<td style="text-align:center">'.$libro["cantidad"].'</td>';
                     $total_cantidad[]       = $libro["cantidad"];
@@ -519,6 +538,7 @@
                 <td></td>
                 <td colspan="6" style="text-align:right">Total</td>
                 <td style="text-align:center"><?= $total_c ?></td>
+                <?php if ($hay_cant_aprob): ?><td style="text-align:center"><?= array_sum($total_cantidad_aprob) ?></td><?php endif; ?>
               </tr>
             </tfoot>
           </table>
