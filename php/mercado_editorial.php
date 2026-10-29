@@ -1,46 +1,41 @@
 <?php
-
-	require_once("aut.php"); 
+	// Añade títulos al mercado editorial del colegio (formulario "Añadir títulos" de ajax/tab_mercado.php).
+	require_once("aut.php");
 	require_once('../conexion/bdd.php');
-	
-	
-	foreach ($_POST['libro_m'] as $libros => $libro) {
-	   
-	    if (empty($libro)) {
-	        continue;
-	    }
+	require_once('../includes/mercado_editorial_datos.php');
 
-	    list($editorial, $materia, $grado, $libro_nombre, $vigencia) = explode('/', $libro);
+	$colegio = mercado_colegio($bdd, (int)($_POST['id_colegio'] ?? 0));
+	$periodo = mercado_periodo($bdd, (int)($_POST['periodo'] ?? 0));
+	if (!$colegio || !$periodo) {
+		header('Location: ../index.php');
+		exit;
+	}
+	$volver = '../colegio.php?codigo='.urlencode($colegio['codigo']).'&periodo='.$periodo['id'].'&tab=mercado';
 
-	   
-	    $sql_p = "INSERT INTO mercado_editorial(id_periodo,id_colegio,id_materia,id_grado,editorial,libro,vigencia,id_usuario) 
-	              VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
-
-	    $query_p = $bdd->prepare($sql_p);
-
-	    if ($query_p == false) {
-	        print_r($bdd->errorInfo());
-	        die('Erreur prepare');
-	    }
-
-	    // Se pasan las variables de forma segura para prevenir inyección SQL
-	    $sth_p = $query_p->execute([
-	        $_POST['periodo'],
-	        $_POST['id_colegio'],
-	        $materia,
-	        $grado,
-	        $editorial,
-	        $libro_nombre,
-	        $vigencia,
-	        $_SESSION['id']
-	    ]);
-
-	    if ($sth_p == false) {
-	        print_r($query_p->errorInfo());
-	        die('Erreur execute');
-	    }
+	if (!mercado_puede_editar($colegio)) {
+		header('Location: '.$volver.'&msg=mercado_sin_permiso');
+		exit;
 	}
 
-	header('Location: ../colegio.php?codigo='.$_POST["cod_colegio"].'&periodo='.$_POST["periodo"].'');
-	
-?>
+	$sql = "INSERT INTO mercado_editorial(id_periodo, id_colegio, id_materia, id_grado, id_tipo_libro, editorial, id_libro_eureka,
+	                                      libro, precio, tasa_compra, descuento, tipo_acuerdo, vigencia, id_usuario, created_at)
+	        VALUES(?, ?, ?, ?, ?, ?, 0, ?, 0, 0, 0, 0, ?, ?, NOW())";
+	$query = $bdd->prepare($sql);
+
+	$guardados = 0;
+	foreach ($_POST['libro'] ?? [] as $i => $libro) {
+		$libro     = trim($libro);
+		$editorial = (int)($_POST['editorial'][$i] ?? 0);
+		$materia   = (int)($_POST['materia'][$i] ?? 0);
+		$grado     = (int)($_POST['grado'][$i] ?? 0);
+		if ($libro === '' || !$editorial || !$materia || !$grado) {
+			continue;
+		}
+		$query->execute([
+			$periodo['id'], $colegio['id'], $materia, $grado, (int)($_POST['tipo_libro'][$i] ?? 0), $editorial,
+			mb_substr($libro, 0, 200), mb_substr(trim($_POST['vigencia'][$i] ?? ''), 0, 50), $_SESSION['id'],
+		]);
+		$guardados++;
+	}
+
+	header('Location: '.$volver.'&msg='.($guardados ? 'mercado_anadido' : 'mercado_vacio'));

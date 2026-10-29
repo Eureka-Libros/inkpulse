@@ -1,47 +1,34 @@
 <?php
-	require_once("../php/aut.php");
+	// Guarda tasa de compra, PVP y descuento de los títulos del mercado editorial (tabla de ajax/tab_mercado.php).
+	// Los porcentajes llegan en % y se guardan como fracción.
+	require_once("aut.php");
 	include("../conexion/bdd.php");
+	require_once('../includes/mercado_editorial_datos.php');
 
-	if (isset($_POST["mercado_m"])) {
-
-		
-		
-		foreach ($_POST["mercado_m"] as $presups => $presup) {
-
-			list($mercado_id,$tasa_c,$descuento,$precio) = explode("/", $presup);
-
-			$sql = "SELECT columna FROM libros WHERE id='".$libro."'";
-
-			$req = $bdd->prepare($sql);
-			$req->execute();
-			$con_colum = $req->fetch();		
-
-			if ($mercado_id !="") {
-
-
-				$sql_e = "UPDATE mercado_editorial SET precio='".$precio."', tasa_compra='".$tasa_c."', descuento='".$descuento."' WHERE id='".$mercado_id."'";
-
-
-				$query_e = $bdd->prepare( $sql_e );
-				if ($query_e == false) {
-					print_r($bdd->errorInfo());
-						die ('Erreur prepare');
-					}
-				$sth_e = $query_e->execute();
-				if ($sth_e == false) {
-					print_r($query_e->errorInfo());
-					die ('Erreur execute');
-				}
-					
-				
-			}
-
-			
-		}
-
+	$colegio = mercado_colegio($bdd, (int)($_POST['id_colegio'] ?? 0));
+	$periodo = mercado_periodo($bdd, (int)($_POST['periodo'] ?? 0));
+	if (!$colegio || !$periodo) {
+		header('Location: ../index.php');
+		exit;
 	}
-	
-	//header('Location: ../colegio.php?codigo='.$_POST["codigo"].'&periodo='.$_POST["periodo"].'');
+	$volver = '../colegio.php?codigo='.urlencode($colegio['codigo']).'&periodo='.$periodo['id'].'&tab=mercado';
 
+	if (!mercado_puede_editar($colegio) || !mercado_periodo_abierto($periodo)) {
+		header('Location: '.$volver.'&msg=mercado_sin_permiso');
+		exit;
+	}
 
-?>
+	$num = fn($v) => max(0, (float)str_replace(',', '.', (string)$v));
+
+	$query = $bdd->prepare("UPDATE mercado_editorial SET precio=?, tasa_compra=?, descuento=?, updated_at=NOW()
+	                        WHERE id=? AND id_colegio=? AND id_periodo=?");
+	foreach ($_POST['items'] ?? [] as $id => $item) {
+		$query->execute([
+			round($num($item['precio'] ?? 0)),
+			min(100, $num($item['tasa'] ?? 0)) / 100,
+			min(100, $num($item['descuento'] ?? 0)) / 100,
+			(int)$id, $colegio['id'], $periodo['id'],
+		]);
+	}
+
+	header('Location: '.$volver.'&msg=mercado_guardado');
