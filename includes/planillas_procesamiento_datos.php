@@ -98,26 +98,9 @@ function obtener_detalle_planilla_procesamiento($bdd, $tipo, $idPlanilla) {
 
     if ($tipo === 'venta') {
         $sql = "SELECT o.id, o.fecha, c.colegio,
-                       CASE WHEN u.tipo=3 THEN CONCAT(TRIM(u.nombres),' ',TRIM(u.apellidos)) ELSE TRIM(c.responsable) END AS responsable,
-                       COALESCE(NULLIF(TRIM(cl.cliente),''),
-                                NULLIF(TRIM(CASE WHEN u.tipo=3 THEN CONCAT(TRIM(u.nombres),' ',TRIM(u.apellidos)) ELSE c.responsable END),''),
-                                NULLIF(TRIM(CONCAT_WS(' ',TRIM(u.nombres),TRIM(u.apellidos))),''),
-                                NULLIF(TRIM(CONCAT_WS(' ',TRIM(uc.nombres),TRIM(uc.apellidos))),'')) AS cliente
-                FROM {$info['tabla_detalle']} d
-                JOIN {$info['tabla_origen']} o ON o.id = d.id_pedido
-                JOIN colegios c ON c.id = o.id_colegio
-                LEFT JOIN zonas z ON z.codigo = c.cod_zona
-                LEFT JOIN usuarios u ON u.cod_zona = z.codigo
-                LEFT JOIN clientes cl ON cl.id = o.cliente
-                LEFT JOIN usuarios uc ON uc.id = o.id_usuario
-                WHERE d.id_planilla = ?
-                GROUP BY o.id
-                ORDER BY o.id";
-    } elseif ($tipo === 'muestreo') {
-        $sql = "SELECT o.id, o.fecha, c.colegio,
-                       CASE WHEN u.tipo IN (1,3) THEN CONCAT(TRIM(u.nombres),' ',TRIM(u.apellidos)) ELSE TRIM(c.responsable) END AS responsable,
-                       COALESCE(NULLIF(TRIM(CASE WHEN u.tipo IN (1,3) THEN CONCAT(TRIM(u.nombres),' ',TRIM(u.apellidos)) ELSE c.responsable END),''),
-                                NULLIF(TRIM(CONCAT_WS(' ',TRIM(u.nombres),TRIM(u.apellidos))),'')) AS cliente
+                        CONCAT(TRIM(u.nombres),' ',TRIM(u.apellidos)) AS responsable,
+                        COALESCE(NULLIF(TRIM(CONCAT(TRIM(u.nombres),' ',TRIM(u.apellidos))),''),
+                        NULLIF(TRIM(CONCAT_WS(' ',TRIM(u.nombres),TRIM(u.apellidos))),'')) AS cliente
                 FROM {$info['tabla_detalle']} d
                 JOIN {$info['tabla_origen']} o ON o.id = d.id_pedido
                 JOIN colegios c ON c.id = o.id_colegio
@@ -125,6 +108,19 @@ function obtener_detalle_planilla_procesamiento($bdd, $tipo, $idPlanilla) {
                 WHERE d.id_planilla = ?
                 GROUP BY o.id
                 ORDER BY o.id";
+    } elseif ($tipo === 'muestreo') {
+        $sql = "SELECT o.id, o.fecha, c.colegio,
+                        CONCAT(TRIM(u.nombres),' ',TRIM(u.apellidos)) AS responsable,
+                        COALESCE(NULLIF(TRIM(CONCAT(TRIM(u.nombres),' ',TRIM(u.apellidos))),''),
+                        NULLIF(TRIM(CONCAT_WS(' ',TRIM(u.nombres),TRIM(u.apellidos))),'')) AS cliente
+                FROM {$info['tabla_detalle']} d
+                JOIN {$info['tabla_origen']} o ON o.id = d.id_pedido
+                JOIN colegios c ON c.id = o.id_colegio
+                LEFT JOIN usuarios u ON u.id = o.id_usuario
+                WHERE d.id_planilla = ?
+                GROUP BY o.id
+                ORDER BY o.id";
+
     } else { // sa: pedidos2.colegio es texto directo, sin FK a colegios
         asegurar_columna_cliente_pedidos2($bdd);
         $sql = "SELECT o.id, o.fecha, o.colegio,

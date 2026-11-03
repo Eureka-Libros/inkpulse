@@ -22,7 +22,7 @@ function planilla_pdf_columnas() {
     return [
         ['key' => 'pedido',    'label' => ['No.', 'Pedido'],        'w' => 14, 'grupo' => null],
         ['key' => 'fecha_ped', 'label' => ['Fecha', 'Pedido'],      'w' => 16, 'grupo' => null],
-        ['key' => 'cliente',   'label' => ['Cliente'],              'w' => 38, 'grupo' => null],
+        ['key' => 'cliente',   'label' => ['Usuario'],              'w' => 55, 'grupo' => null],
         ['key' => 'bod_fecha', 'label' => ['Fecha', 'Entrega'],     'w' => 16, 'grupo' => 'BODEGA'],
         ['key' => 'bod_hora',  'label' => ['Hora', 'Entrega'],      'w' => 13, 'grupo' => 'BODEGA'],
         ['key' => 'bod_rec',   'label' => ['Recibido', 'por'],      'w' => 24, 'grupo' => 'BODEGA'],
@@ -145,7 +145,9 @@ function planilla_pdf_generar($consecutivo, $fecha_descarga, $procesados, $cols,
         ];
         foreach ($cols as $c) {
             if ($c['key'] === 'cliente') {
-                $pdf->Cell($c['w'], $fila_h, pdf_fit_text($pdf, ($p['cliente'] ?? '') !== '' ? $p['cliente'] : ($p['responsable'] ?? ''), $c['w'] - 2), 1, 0, 'L');
+                // Se elimina pdf_fit_text y se pasa el texto directo
+                $texto_cliente = ($p['cliente'] ?? '') !== '' ? $p['cliente'] : ($p['responsable'] ?? '');
+                $pdf->Cell($c['w'], $fila_h, $texto_cliente, 1, 0, 'L');
             } else {
                 $pdf->Cell($c['w'], $fila_h, $valores[$c['key']], 1, 0, 'C');
             }
