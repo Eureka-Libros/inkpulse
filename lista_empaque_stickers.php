@@ -60,12 +60,11 @@
 
       echo "<div class='stickers'>
         <div style='border: 1px solid black; margin-bottom: 30px; -moz-border-radius: 12px; -webkit-border-radius: 12px; padding: 5px;'>
-          <h4 style='margin-bottom: 10px;' >".$lista["cliente"]."</h4>
+          <h3 style='margin-bottom: 10px;' >".$lista["persona_recibe"]."</h3>
 
-            <h5>".$lista["ciudad"]."</h5>
-            <h5 style='margin-bottom: 10px;'>".$lista["direccion"]."</h5>
-            <h5>".$lista["persona_recibe"]."</h5>
-            <h5 style='margin-bottom: 10px;'>".$lista["telefono_recibe"]."</h5>
+            <h3>".$lista["ciudad"]."</h3>
+            <h3 style='margin-bottom: 10px;'>".$lista["direccion"]."</h3><br>
+            <h4 style='margin-bottom: 10px;'>".$lista["telefono_recibe"]."</h4>
             
             <p style='font-size:15px'>CAJA ".$i."/".$lista["total_cajas"]."</p>
             <p style='font-size:12px'>".$lista["empresa"]."</p>
