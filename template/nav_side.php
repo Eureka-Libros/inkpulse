@@ -460,7 +460,7 @@ $periodos_active     = $current_page === 'periodos.php';
 
 									<li class="menu-subgroup-label">Ventas</li>
 									<!-- 2026-10-26: igual que devoluciones de muestras (antes modal de período → colegios_devols.php). -->
-									<li><a href="devoluciones_ventas.php">Devolución de ventas</a></li>
+									<li><a href="#" data-toggle="modal" data-target="#modal_devols">Devolución de ventas</a></li>
 									<?php if ($_SESSION["tipo"]==1 || $_SESSION["tipo"] ==2 || $_SESSION["id"] ==2) { ?>
 										<li><a href="devol_muestras_sa.php?tp=3">Devoluciones de ventas sin adopción</a></li>
 									<?php } ?>
