@@ -33,10 +33,14 @@
 	// terminaba subiéndose a una ruta inexistente y no quedaba guardado.
 	$dir_subida = dirname(__DIR__) . '/adjuntos/envio/';
 
-	if ($n_doc === '' || $valor === '') {
-		echo "Falta buscar y asignar el documento y el valor despachado antes de guardar.";
-		exit;
+
+	if ($accion === 'atender') {
+		if ($n_doc === '' || $valor === '') {
+			echo "Falta buscar y asignar el documento y el valor despachado antes de guardar.";
+			exit;
+		}
 	}
+	
 
 	$bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 

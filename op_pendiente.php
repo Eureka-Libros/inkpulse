@@ -408,7 +408,7 @@
             </div>
           </div>
 
-          <form action="php/procesar_op.php" method="POST" enctype="multipart/form-data">
+          <form action="php/procesar_op.php" method="POST" enctype="multipart/form-data" id="formop">
 
           <!-- Información general -->
           <div class="op-card">
@@ -559,7 +559,11 @@
                 <?php endif; ?>
 
               </div>
+              <button type="submit" id="guardarbt" name="accion" value="guardar" class="op-btn op-btn-guardar">
+                <i class="bi bi-save"></i> Modificar
+              </button>
             </div>
+
           </div>
 
           <?php
@@ -922,9 +926,7 @@
 
             <!-- Botones de acción -->
             <div class="op-actions">
-              <button type="submit" name="accion" value="guardar" class="op-btn op-btn-guardar">
-                <i class="bi bi-save"></i> Guardar
-              </button>
+              
               <button type="submit" name="accion" value="atender" class="op-btn op-btn-atender">
                 <i class="bi bi-check-lg"></i> Atender
               </button>
@@ -1678,6 +1680,11 @@
           renumerar();
         });
       })();
+
+      $("#guardarbt").click(function(){
+        $(".op-input").removeAttr("required");
+        $("#formop").attr("data-accion", "guardar");
+      })
     </script>
 <script src="src/ink-alerts.js"></script>
   </body>
