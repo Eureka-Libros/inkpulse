@@ -63,7 +63,7 @@
           <h3 style='margin-bottom: 10px;' >".$lista["persona_recibe"]."</h3>
 
             <h3>".$lista["ciudad"]."</h3>
-            <h3 style='margin-bottom: 10px;'>".$lista["direccion"]."</h3><br>
+            <h3 style='margin-bottom: 10px;'>".$lista["direccion"]."</h3>
             <h4 style='margin-bottom: 10px;'>".$lista["telefono_recibe"]."</h4>
             
             <p style='font-size:15px'>CAJA ".$i."/".$lista["total_cajas"]."</p>
