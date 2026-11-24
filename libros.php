@@ -2,7 +2,7 @@
 require_once("php/aut.php");
 require_once("conexion/bdd.php");
 
-if (($_SESSION["autentificado"] ?? '') === "SI" && ($_SESSION["tipo"] ?? null) != 1 && ($_SESSION["id"] ?? null) != 21) {
+if (($_SESSION["autentificado"] ?? '') === "SI" && ($_SESSION["tipo"] ?? null) != 1 && ($_SESSION["id"] ?? null) != 21 && ($_SESSION["id"] ?? null) != 25) {
     header("Location: index.php");
     exit;
 }
