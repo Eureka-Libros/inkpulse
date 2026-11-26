@@ -313,7 +313,7 @@
             if ($origen_legaliz && !$pedidos_legaliz) $pedidos_legaliz = [(int)$origen_legaliz['id_muestreo']];
           }
 
-          if ($pedido["tipo"] == 3) {
+          if ($pedido["tipo"] == 3 || $pedido["tipo"] == 1 || $pedido["tipo"] == 10) {
             list($empresa, $n_zona) = explode("/", $pedido["zona"]);
             $responsable = $pedido["nombres"]." ".$pedido["apellidos"];
           } else {

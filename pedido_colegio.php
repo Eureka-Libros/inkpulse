@@ -52,7 +52,7 @@ if (intval($pedido['tipo'] ?? 0) != 3) {
   $sub_zona_nombre = $sz['sub_zona'] ?? '—';
 }
 
-if (intval($pedido['tipo'] ?? 0) == 3) {
+if (intval($pedido['tipo'] ?? 0) == 3 || intval($pedido['tipo'] ?? 0) == 3 || intval($pedido['tipo'] ?? 0) == 10) {
   $parts     = explode("/", $pedido['zona'] ?? '');
   $d_empresa = htmlspecialchars(trim($parts[0] ?? ''));
   $d_zona    = htmlspecialchars(trim($parts[1] ?? ''));

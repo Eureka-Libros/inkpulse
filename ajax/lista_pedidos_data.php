@@ -100,7 +100,7 @@ foreach ($bdd->query("SELECT id, sub_zona FROM sub_zonas")->fetchAll() as $sz)
 $data = [];
 foreach ($rows as $p) {
   $tipo_p = intval($p['tipo'] ?? 0);
-  if ($tipo_p == 3) {
+  if ($tipo_p == 3 || $tipo_p == 1 || $tipo_p == 10) {
     $parts     = explode('/', $p['zona'] ?? '');
     $empresa_v = trim($parts[0] ?? '');
     $n_zona    = trim($parts[1] ?? '');
