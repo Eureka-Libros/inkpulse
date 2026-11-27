@@ -926,8 +926,8 @@
         </div><!-- /.modal-body -->
 
         <div class="modal-footer">
-          <?php if ($_SESSION["tipo"] != 2 && $_SESSION["tipo"] != 4): ?>
-            <?php if ($_SESSION["zona"] == $_GET["cod_zona"] || $_SESSION["tipo"] == 1): ?>
+          <?php if ($_SESSION["tipo"] != 4): ?>
+            <?php if ($_SESSION["zona"] == $_GET["cod_zona"] || $_SESSION["tipo"] == 1 || $_SESSION["tipo"] == 2): ?>
               <?php if ($_GET["f_cierre"] > date("Y-m-d") && !$adop_cerrada): ?>
                 <button type="button" class="lb-add-btn" id="agregar_aod">
                   <i class="bi bi-plus-circle"></i> Añadir otro libro
