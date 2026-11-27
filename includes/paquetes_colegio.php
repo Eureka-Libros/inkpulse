@@ -68,7 +68,7 @@ function es_colegio_eureka(PDO $bdd, $cod_zona) {
  * aparte, ver puede_ver_fichas_paquete().
  */
 function puede_usar_tipo_adopcion() {
-	return in_array((int)($_SESSION['tipo'] ?? 0), [1, 3], true) || ((int)($_SESSION['id'] ?? 0) === 69);
+	return in_array((int)($_SESSION['tipo'] ?? 0), [1,2,3], true) || ((int)($_SESSION['id'] ?? 0) === 69);
 }
 
 /**
