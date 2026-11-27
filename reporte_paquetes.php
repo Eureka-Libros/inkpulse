@@ -15,7 +15,7 @@ crear_tablas_paquetes($bdd);
 // Usuarios "eureka": promotores (tipo=3) y Héctor Morales (id=69).
 $sqlUsuarios = "SELECT id, CONCAT(nombres, ' ', apellidos) as promotor
                 FROM usuarios
-                WHERE (tipo = 3 OR id = 69) AND act = 1
+                WHERE (tipo = 3 OR tipo =6 OR id = 69) AND act = 1
                 ORDER BY nombres";
 $usuarios = $bdd->query($sqlUsuarios)->fetchAll(PDO::FETCH_ASSOC);
 

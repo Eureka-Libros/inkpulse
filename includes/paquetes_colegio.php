@@ -58,7 +58,7 @@ function es_colegio_eureka(PDO $bdd, $cod_zona) {
 	$row = $req->fetch(PDO::FETCH_ASSOC);
 	if (!$row) return false;
 
-	return (int)$row['tipo'] === 3 || (int)$row['id'] === 69;
+	return (int)$row['tipo'] === 3 || (int)$row['tipo'] === 6 || (int)$row['id'] === 69;
 }
 
 /**
@@ -829,7 +829,7 @@ function obtener_reporte_fichas_paquetes(PDO $bdd, $id_periodo, $id_usuario) {
 			$cache_resp[$cz] = $req_resp->fetch(PDO::FETCH_ASSOC) ?: null;
 		}
 		$resp = $cache_resp[$cz];
-		if (!$resp || !((int)$resp['tipo'] === 3 || (int)$resp['id'] === 69)) continue;
+		if (!$resp || !((int)$resp['tipo'] === 3 || (int)$resp['tipo'] === 6  || (int)$resp['id'] === 69)) continue;
 
 		$fichas = datos_fichas_paquetes($bdd, $c['id'], $id_periodo);
 		if (!$fichas || !$fichas['paquetes']) continue;
