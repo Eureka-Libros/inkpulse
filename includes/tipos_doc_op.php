@@ -16,13 +16,13 @@
  */
 
 function tipos_doc_op_codigos(PDO $bdd, array $origen) {
-    if (!empty($origen['pedidos_agp']) || !empty($origen['id_pedido'])) return ['FVE', 'REM RCEUR'];
-    if (!empty($origen['id_pedido_vd'])) return ['FVE', 'REM RCEUR']; // venta directa: igual que pedidos
+    if (!empty($origen['pedidos_agp']) || !empty($origen['id_pedido'])) return ['FVE', 'REM RCEUR', 'TRASLADO'];
+    if (!empty($origen['id_pedido_vd'])) return ['FVE', 'REM RCEUR', 'TRASLADO']; // venta directa: igual que pedidos
     if (!empty($origen['id_pedido_dist'])) {
         $stmt = $bdd->prepare("SELECT tipo FROM pedidos2 WHERE id = ?");
         $stmt->execute([intval($origen['id_pedido_dist'])]);
         $tipo = (int)$stmt->fetchColumn();
-        if ($tipo === 1) return ['FVE', 'REM RCEUR'];
+        if ($tipo === 1) return ['FVE', 'REM RCEUR', 'TRASLADO'];
         if ($tipo === 2) return ['REM22'];
         return null;
     }
