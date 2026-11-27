@@ -30,10 +30,10 @@ include("../conexion/bdd.php");
 
 $objSpreadsheet = new Spreadsheet();
 $objSpreadsheet->getProperties()->setCreator("Ing. Alejandro Rangel");
-$objSpreadsheet->getProperties()->setTitle("Pedidos sin adopción");
+$objSpreadsheet->getProperties()->setTitle("Pedidos con adopción y su OP");
 $objSpreadsheet->createSheet(0);
 $objSpreadsheet->setActiveSheetIndex(0);
-$objSpreadsheet->getActiveSheet()->setTitle("Pedidos sin adopción");
+$objSpreadsheet->getActiveSheet()->setTitle("Pedidos con adopción y su OP");
 $objSpreadsheet->getActiveSheet()->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
 $objSpreadsheet->getActiveSheet()->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_LETTER);
 $objSpreadsheet->getActiveSheet()->getPageSetup()->setFitToPage(true);
@@ -64,7 +64,7 @@ $drawing->setWorksheet($objSpreadsheet->getActiveSheet());
 $objSpreadsheet->getActiveSheet()->mergeCells('C2:D2');
 $objSpreadsheet->getActiveSheet()->getStyle('E2')->applyFromArray($estilo_negrita);
 $objSpreadsheet->getActiveSheet()->getStyle('E2')->applyFromArray($estilo_centrar);
-$objSpreadsheet->getActiveSheet()->SetCellValue("E2", "Pedidos sin adopción - Libro a libro");
+$objSpreadsheet->getActiveSheet()->SetCellValue("E2", "Pedidos con adopción y su OP");
 	
 $fecha=date("Y-m-d H:i:s");
 $sql = "SELECT CONCAT(nombres, ' ', apellidos) as nombre_u FROM usuarios WHERE id='".$_SESSION['id']."'";
