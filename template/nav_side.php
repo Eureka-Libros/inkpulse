@@ -674,7 +674,7 @@ register_shutdown_function(function () use ($bdd) {
 							</li>
 						<?php } ?>
 
-						<?php if (in_array($_SESSION["id"], [1, 93, 94]) || $_SESSION["id"] == 21) {?>
+						<?php if (in_array($_SESSION["id"], [1, 93, 94,25]) || $_SESSION["id"] == 21) {?>
 						<li><div class="sidebar-small-cap admin-sec">Administrativo</div></li>
 						<li>
 							<a href="libros.php" class="dropdown-toggle no-arrow <?= $libros_active ? 'active' : '' ?>">
